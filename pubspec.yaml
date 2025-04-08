@@ -1,0 +1,122 @@
+name: one_by_one
+description: "OneByOne Flutter Application"
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# 출시 버전
+version: 1.0.0+1
+
+# flutter 3.27.4 사용
+environment:
+  sdk: ^3.6.2
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Getx
+  get: ^4.6.6
+  shared_preferences: ^2.0.15
+
+  # 플러터 인앱 웹뷰
+  flutter_inappwebview: ^6.1.5
+
+  # 권한 설정 관리
+  permission_handler: ^11.0.1
+
+  # 플러터 SVG 아이콘
+  flutter_svg: ^2.0.9
+
+    # 버전 확인
+  package_info_plus: ^4.2.0
+  device_info_plus: ^9.1.2
+
+  # 스플래시 화면
+  flutter_native_splash: ^2.3.5
+
+  # 인터넷 상태 확인
+  connectivity_plus: ^5.0.1
+
+  # 파이어 베이스
+  firebase_core: ^2.15.0
+  firebase_messaging: ^14.6.5
+  flutter_local_notifications:
+  firebase_analytics: ^10.8.0
+
+  # 뱃지 관리
+  flutter_app_badge: ^2.0.2
+
+  # 네이티브 딥링크
+  app_links: ^6.3.3
+  path_provider: ^2.1.1
+  url_launcher: ^6.2.1
+
+  # .env
+  flutter_dotenv: ^5.1.0
+
+  # 앱 업데이트 확인
+  app_version_update:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^5.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+
+    # 이미지 경로
+    - assets/image/
+
+    # .env 경로
+    - lib/.env
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/to/asset-from-package
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/to/font-from-package
