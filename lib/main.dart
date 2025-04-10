@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,7 +8,9 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_by_one/app.dart';
+import 'package:one_by_one/common/app_notification.dart';
 import 'package:one_by_one/common/pref/app_preferences.dart';
+import 'package:one_by_one/firebase_options.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// 백그라운드 메시지 수신 호출 콜백 함수 - 엔트리 포인트
@@ -29,19 +32,28 @@ void main() async {
   /// Google Mobile Ads 초기화
   await MobileAds.instance.initialize();
 
+  MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(
+
+      /// TODO : 실기기 테스트 시 기기 등록 필요
+      testDeviceIds: [],
+    ),
+  );
+
+
   /// 저장 공간 권한 요청 추가
   await Permission.storage.request();
 
   /// 1차 스플래시 유지
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  /// TODO : 파이어베이스 초기화
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  /// 파이어베이스 초기화
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  /// TODO : FCM 알림 설정
-  // initializeNotification();
+  /// FCM 알림 설정
+  initializeNotification();
 
   /// 앱 알림 설정 파일 로드
   await AppPreferences.init();

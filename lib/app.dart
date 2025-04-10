@@ -29,31 +29,40 @@ class _AppState extends State<App> {
   @override
   void initState() {
 
-    /// TODO : 토큰 설정
-    // getMyDeviceToken();
+    /// 토큰 설정
+    getMyDeviceToken();
 
-    /// TODO : FCM 수신
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-    //   RemoteNotification? notification = message.notification;
-    //
-    //   /// 알림 도착
-    //   if(notification != null && Prefs.isAdPushOnRx.get()){
-    //     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    //     await flutterLocalNotificationsPlugin.show(
-    //       notification.hashCode,
-    //       notification.title,
-    //       notification.body,
-    //       const NotificationDetails(
-    //         android: AndroidNotificationDetails(
-    //           'high_importance_channel',
-    //           'high_importance_notification',
-    //           importance: Importance.max,
-    //           priority: Priority.high,
-    //         ),
-    //       ),
-    //     );
-    //   }
-    // });
+    /// FCM 수신
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      RemoteNotification? notification = message.notification;
+
+      /// 알림 도착
+      if(notification != null){
+        final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+        await flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          const NotificationDetails(
+
+            /// 안드로이드 알림 설정
+            android: AndroidNotificationDetails(
+              'high_importance_channel',
+              'high_importance_notification',
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
+
+            /// IOS 알림 설정
+            iOS: DarwinNotificationDetails(
+              presentAlert: true,
+              presentBadge: true,
+              presentSound: true,
+            ),
+          ),
+        );
+      }
+    });
 
     /// 버전 + 플랫폼 설정
     _setVersion();

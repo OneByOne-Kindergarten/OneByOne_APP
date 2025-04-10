@@ -103,3 +103,8 @@ Icon
 # 환경변수 파일들
 lib/.env
 ios/Flutter/EnvironmentVariables.xcconfig
+
+# Firebase 설정 파일
+firebase.json
+lib/firebase_options.dart
+ios/Runner/GoogleService-Info.plist
