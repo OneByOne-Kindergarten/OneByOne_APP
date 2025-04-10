@@ -3,6 +3,12 @@
         android:label="one_by_one"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- 애드몹 키 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${adMobApplicationId}"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

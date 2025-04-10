@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:one_by_one/common/app_colors.dart';
 import 'package:one_by_one/controller/webview_controller.dart';
 import 'package:one_by_one/screen/custom_splash_screen.dart';
+import 'package:one_by_one/widget/bottom_banner_ad_widget.dart';
 import 'package:one_by_one/widget/webview_widget.dart';
 
 /// 웹뷰 화면
@@ -38,7 +39,12 @@ class WebViewScreen extends GetView<WebViewController> {
                 },
                 child: Column(
                   children: <Widget>[
+
+                    /// 웹뷰
                     Expanded(child: WebViewWidget(initUrl: initUrl)),
+
+                    /// 하단 배너 광고
+                    const BottomBannerAdWidget(),
                   ],
                 ),
               ),

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_by_one/app.dart';
 import 'package:one_by_one/common/pref/app_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,6 +25,9 @@ void main() async {
 
   /// .env 파일 로딩
   await dotenv.load(fileName: "lib/.env");
+
+  /// Google Mobile Ads 초기화
+  await MobileAds.instance.initialize();
 
   /// 저장 공간 권한 요청 추가
   await Permission.storage.request();

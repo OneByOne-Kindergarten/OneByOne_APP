@@ -99,3 +99,7 @@ Icon
 
 # FVM Version Cache
 .fvm/
+
+# 환경변수 파일들
+lib/.env
+ios/Flutter/EnvironmentVariables.xcconfig

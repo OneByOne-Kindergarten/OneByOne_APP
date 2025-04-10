@@ -5,6 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:one_by_one/common/ad_helper.dart';
+import 'package:one_by_one/common/common_util.dart';
+import 'package:one_by_one/common/pref/app_pref.dart';
 
 import '../common/app_page_url.dart';
 
@@ -15,6 +19,9 @@ class WebViewController extends GetxController {
 
   /// 딥링크 스트림
   StreamSubscription? _sub;
+
+  /// 전면 광고
+  InterstitialAd? _interstitialAd;
 
   /// WebView Key
   final GlobalKey webViewKey = GlobalKey();
@@ -44,10 +51,46 @@ class WebViewController extends GetxController {
         ]
     );
 
+    /// 전면 광고 초기화
+    _initInterstitialAd();
+
+    /// 마지막 실행 시간 저장
+    AdHelper.updateLastAppRunTime();
+
     /// 앱이 켜있는 동안의 딥링크 처리
     _handleIncomingLinks();
 
     super.onInit();
+  }
+
+  /// 전면 광고 초기화
+  void _initInterstitialAd() async {
+    if (AdHelper.shouldShowInterstitialAd()) {
+      CommonUtil.logger.d("전면 광고 표시 조건 충족 >> ${Prefs.lastAppRunTime.get().isEmpty ? "첫 실행" : "2시간 이상 경과"}");
+    _interstitialAd = await AdHelper.loadInterstitialAd();
+
+    /// 전면광고 노출
+    if (_interstitialAd != null) {
+      CommonUtil.logger.d(" 전면 광고 로드 성공");
+      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          ad.dispose();
+        },
+        onAdFailedToShowFullScreenContent: (ad, error) {
+          CommonUtil.logger.e("전면 광고 표시 실패 >> $error");
+          ad.dispose();
+        },
+      );
+
+      Future.delayed(const Duration(seconds: 2), () {
+        CommonUtil.logger.d("전면 광고 표시!!");
+        _interstitialAd?.show();
+      });
+
+    }
+    } else {
+      CommonUtil.logger.d("전면 광고 표시 조건 미충족 >> 2시간 미만 경과");
+    }
   }
 
   /// TODO : 뒤로가기 메서드 고도화

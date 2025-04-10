@@ -47,5 +47,7 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>GADApplicationIdentifier</key>
+		<string>${ADMOB_APP_ID_IOS}</string>
 	</dict>
 </plist>

@@ -58,6 +58,12 @@ dependencies:
   path_provider: ^2.1.1
   url_launcher: ^6.2.1
 
+  # 애드몹 광고
+  google_mobile_ads: ^6.0.0
+
+  # 로그
+  logger: ^2.4.0
+
   # .env
   flutter_dotenv: ^5.1.0
 

@@ -18,9 +18,6 @@ class Prefs {
 
    */
 
-  /// 어플리케이션 알림 설정 여부
-  static final isAdPushOnRx = RxPreferenceItem<bool, RxBool>('isAdPushOnRx', true);
-
   /// 어플리케이션 버전
   static final appBundleVersionRx = RxPreferenceItem<String, RxString>('appBundleRx', '');
 
@@ -32,8 +29,7 @@ class Prefs {
 
   /// 디바이스 운영체제 - IOS or AOS
   static final operatingSystem = RxPreferenceItem('operatingSystem', '');
-
-  /// 전자사보 웹 버전
-  static final saboWebVersionRx = RxPreferenceItem('saboWebVersionRx', '');
-
+  
+  /// 마지막 앱 실행 시간 - 전면광고
+  static final lastAppRunTime = RxPreferenceItem<String, RxString>('lastAppRunTime', '');
 }
