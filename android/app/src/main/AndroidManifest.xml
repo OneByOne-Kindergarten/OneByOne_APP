@@ -3,8 +3,14 @@
     <!-- FCM 설정 -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
 
+    <!-- 인터넷 권한 설정 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- 카메라 권한 설정 -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <application
-        android:label="one_by_one"
+        android:label="원바원"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

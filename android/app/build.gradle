@@ -34,8 +34,9 @@ android {
         applicationId = "com.kindergarten.onebyone.one_by_one"
         minSdk = 30
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = flutter.versionCode // TODO : local.properties 버전 코드 확인 필요
+        versionName = flutter.versionName // TODO : local.properties 버전 이름 확인 필요
+
         manifestPlaceholders += [
                 adMobApplicationId: adMobAppId ?: "ca-app-pub-3940256099942544~3347511713",
         ]
