@@ -158,7 +158,7 @@ class WebViewController extends GetxController {
 
   /// 초기 로드 완료 설정
   void setInitialLoadComplete() async {
-    await Future.delayed(const Duration(milliseconds: 1750));
+    await Future.delayed(const Duration(milliseconds: 1500));
     isInitialLoadComplete.value = true;
   }
 }

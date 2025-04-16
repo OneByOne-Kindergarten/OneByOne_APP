@@ -14,7 +14,7 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
   void initState() {
     super.initState();
 
-    // 네이티브 스플래시 제거
+    /// 네이티브 스플래시 제거
     FlutterNativeSplash.remove();
   }
 
@@ -28,32 +28,17 @@ class _CustomSplashScreenState extends State<CustomSplashScreen> {
         child: Stack(
           children: [
 
-            // 이미지 - 중앙 배치
+            // 이미지
             Center(
               child: FractionallySizedBox(
-                widthFactor: 0.3,
+                widthFactor: 0.4,
                 child: Image.asset(
-                  'assets/image/splash_main.png',
+                  'assets/image/splash_main_with_name.png',
                   fit: BoxFit.contain,
                 ),
               ),
             ),
 
-            // 텍스트 - 이미지 아래쪽 공간의 중앙에 배치
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: MediaQuery.of(context).size.height * 0.10,
-              child: const Text(
-                '원바원',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
           ],
         ),
       ),
