@@ -8,6 +8,9 @@ import 'package:one_by_one/common/pref/app_pref.dart';
 /// AdMob 광고 관련 헬퍼 클래스
 class AdHelper {
 
+  /// 개발 환경 여부
+  static bool isDev = true;
+
   /// 테스트 광고 ID
   static const String testBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/6300978111';
   static const String testBannerAdUnitIdIOS = 'ca-app-pub-3940256099942544/2934735716';
@@ -16,6 +19,10 @@ class AdHelper {
 
   /// 배너 광고 ID
   static String get bannerAdUnitId {
+    if (isDev) {
+      return Platform.isAndroid ? testBannerAdUnitIdAndroid : testBannerAdUnitIdIOS;
+    }
+    
     if (Platform.isAndroid) {
       return dotenv.env['ADMOB_BANNER_ID_ANDROID'] ?? testBannerAdUnitIdAndroid;
     } else if (Platform.isIOS) {
@@ -27,6 +34,10 @@ class AdHelper {
 
   /// 전면 광고 ID
   static String get interstitialAdUnitId {
+    if (isDev) {
+      return Platform.isAndroid ? testInterstitialAdUnitIdAndroid : testInterstitialAdUnitIdIOS;
+    }
+    
     if (Platform.isAndroid) {
       return dotenv.env['ADMOB_INTERSTITIAL_ID_ANDROID'] ?? testInterstitialAdUnitIdAndroid;
     } else if (Platform.isIOS) {

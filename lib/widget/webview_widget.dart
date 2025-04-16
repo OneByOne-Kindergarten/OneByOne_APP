@@ -31,8 +31,8 @@ class WebViewWidget extends StatelessWidget {
             /// IOS 유투브 전체화면 방지
             isElementFullscreenEnabled: Platform.isAndroid ? true : false,
 
-            /// 줌인 + 줌아웃 - 허용 및 줌 컨트롤러 표시 방지
-            supportZoom: true,
+            /// 줌인 + 줌아웃 + 줌 컨트롤러 표시 - 방지
+            supportZoom: false,
             builtInZoomControls: false,
             displayZoomControls: false,
 

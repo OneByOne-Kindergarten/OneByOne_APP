@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class AppColors {
 
   /// 배경 색상
-  static const Color backgroundColor = Color(0xFF17171C);
+  static const Color backgroundColor = Colors.white;
 
   /// blue 3 색상
   static const Color blue3Color = Color(0xFF6CA6ED);
