@@ -48,6 +48,8 @@ post_install do |installer|
         '$(inherited)',
         'PERMISSION_NOTIFICATIONS=1',
         'PERMISSION_APP_TRACKING_TRANSPARENCY=1',
+        'PERMISSION_LOCATION=1',
+        'PERMISSION_LOCATION_WHENINUSE=0',
       ]
     end
   end

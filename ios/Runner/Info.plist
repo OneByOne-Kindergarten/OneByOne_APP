@@ -54,5 +54,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <!-- 위치 권한 설명 -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>원바원은 귀하의 현재 위치를 기반으로 서비스를 제공하기 위해 위치 정보 접근 권한이 필요합니다.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>원바원은 귀하의 위치를 지속적으로 추적하여 최적의 서비스를 제공하기 위해 위치 정보 접근 권한이 필요합니다.</string>
 </dict>
 </plist>
