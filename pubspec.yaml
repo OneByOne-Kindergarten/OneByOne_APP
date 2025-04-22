@@ -70,6 +70,9 @@ dependencies:
   # 앱 업데이트 확인
   app_version_update:
 
+  # 뒤로가기 버튼 제어
+  back_button_interceptor: ^8.0.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

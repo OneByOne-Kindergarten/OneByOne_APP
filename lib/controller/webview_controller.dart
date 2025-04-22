@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -34,9 +35,6 @@ class WebViewController extends GetxController {
   /// WebView URL - RxString
   final RxString myUrl = "$baseUrl/".obs;
 
-  /// 마지막 뒤로가기 시간
-  DateTime? lastBackPressTime;
-
   /// 웹뷰 초기 로드 완료 여부
   final RxBool isInitialLoadComplete = false.obs;
 
@@ -60,7 +58,35 @@ class WebViewController extends GetxController {
     /// 앱이 켜있는 동안의 딥링크 처리
     _handleIncomingLinks();
 
+    /// 뒤로가기 버튼 인터셉터 등록
+    BackButtonInterceptor.add(_backButtonInterceptor);
+
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    /// 뒤로가기 버튼 인터셉터 해제
+    BackButtonInterceptor.remove(_backButtonInterceptor);
+
+    /// 딥링크 스트림 구독 해제
+    _sub?.cancel();
+
+    super.onClose();
+  }
+
+  /// 뒤로가기 버튼 인터셉터
+  Future<bool> _backButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo info) async {
+    await handleSimpleBackPress();
+    return true;
+  }
+
+  /// 뒤로가기 메서드
+  Future<void> handleSimpleBackPress() async {
+    final canGoBack = await webViewController.canGoBack();
+    if (canGoBack) {
+      await webViewController.goBack();
+    }
   }
 
   /// 전면 광고 초기화
@@ -91,39 +117,6 @@ class WebViewController extends GetxController {
     } else {
       CommonUtil.logger.d("전면 광고 표시 조건 미충족 >> 2시간 미만 경과");
     }
-  }
-
-  /// TODO : 뒤로가기 메서드 고도화
-  Future<bool> handleBackPress(BuildContext context) async {
-    final canGoBack = await webViewController.canGoBack();
-
-    if (!canGoBack ||
-        (lastBackPressTime != null &&
-            DateTime.now().difference(lastBackPressTime!) <=
-                const Duration(seconds: 1))) {
-      return await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('원바원 종료'),
-              content: const Text('앱을 종료하시겠습니까?'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('취소'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('종료'),
-                ),
-              ],
-            ),
-          ) ??
-          false;
-    }
-
-    lastBackPressTime = DateTime.now();
-    webViewController.goBack();
-    return false;
   }
 
   /// 웹뷰 URL 변경 메서드

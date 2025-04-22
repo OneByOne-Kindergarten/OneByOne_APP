@@ -1,3 +1,4 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -17,44 +18,36 @@ class WebViewScreen extends GetView<WebViewController> {
 
   @override
   Widget build(BuildContext context) {
+
     /// getXController => 웹뷰 컨트롤러 주입
     Get.put(WebViewController(), permanent: true);
 
     /// 웹뷰 스크린
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: AppColors.backgroundColor,
-        body: Stack(
-          children: [
+      resizeToAvoidBottomInset: false,
+      backgroundColor: AppColors.backgroundColor,
+      body: Stack(
+        children: [
 
-            /// 웹뷰 스크린
-            SafeArea(
-              child: PopScope(
-                canPop: false,
-                onPopInvokedWithResult: (didPop, result) async {
-                  final shouldExit = await controller.handleBackPress(context);
-                  if (shouldExit) {
-                    SystemNavigator.pop();
-                  }
-                },
-                child: Column(
-                  children: <Widget>[
+          /// 웹뷰 스크린
+          SafeArea(
+            child: Column(
+              children: <Widget>[
+                /// 웹뷰
+                Expanded(child: WebViewWidget(initUrl: initUrl)),
 
-                    /// 웹뷰
-                    Expanded(child: WebViewWidget(initUrl: initUrl)),
-
-                    /// 하단 배너 광고
-                    const BottomBannerAdWidget(),
-                  ],
-                ),
-              ),
+                /// 하단 배너 광고
+                const BottomBannerAdWidget(),
+              ],
             ),
+          ),
 
-            /// 스플래시 이미지
-            Obx(() => controller.isInitialLoadComplete.value
-                ? const SizedBox.shrink()
-                : const CustomSplashScreen()),
-          ],
-        ));
+          /// 스플래시 이미지
+          Obx(() => controller.isInitialLoadComplete.value
+              ? const SizedBox.shrink()
+              : const CustomSplashScreen()),
+        ],
+      ),
+    );
   }
 }

@@ -12,6 +12,7 @@
     <application
         android:label="원바원"
         android:name="${applicationName}"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
 
         <!-- 애드몹 키 -->

@@ -9,7 +9,8 @@ import 'package:one_by_one/common/pref/app_pref.dart';
 import 'package:one_by_one/controller/webview_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:one_by_one/common/webview/webview_settings.dart';
+import 'package:one_by_one/common/webview/webview_handlers.dart';
 
 /// 웹뷰 위젯
 class WebViewWidget extends StatelessWidget {
@@ -27,59 +28,10 @@ class WebViewWidget extends StatelessWidget {
     return InAppWebView(
       key: getXController.webViewKey,
       initialUrlRequest: initUrl,
+      initialSettings: WebViewSettings.defaultSettings,
 
-      /// 웹뷰 공통 설정
-      /// TODO : 웹뷰 설정 관리 분리
-      initialSettings: InAppWebViewSettings(
-        /// IOS 유투브 전체화면 방지
-        isElementFullscreenEnabled: Platform.isAndroid ? true : false,
-
-        /// 줌인 + 줌아웃 + 줌 컨트롤러 표시 - 방지
-        supportZoom: false,
-        builtInZoomControls: false,
-        displayZoomControls: false,
-
-        /// 자바스크립트 허용
-        javaScriptCanOpenWindowsAutomatically: true,
-        javaScriptEnabled: true,
-
-        /// 다운로드 허용
-        useOnDownloadStart: true,
-        useOnLoadResource: true,
-        useShouldOverrideUrlLoading: true,
-
-        /// 백그라운드 재생 허용
-        mediaPlaybackRequiresUserGesture: true,
-
-        /// 파일 접근 cors 허용 + 접근 허용
-        allowFileAccessFromFileURLs: true,
-        allowUniversalAccessFromFileURLs: true,
-        allowContentAccess: true,
-
-        /// 스크롤 허용
-        verticalScrollBarEnabled: true,
-
-        /// 오버 스크롤 방지
-        overScrollMode: OverScrollMode.NEVER,
-        disallowOverScroll: false,
-
-        /// 기타 설정
-        useHybridComposition: true,
-        thirdPartyCookiesEnabled: true,
-        allowFileAccess: true,
-        supportMultipleWindows: true,
-        limitsNavigationsToAppBoundDomains: true,
-        allowsInlineMediaPlayback: true,
-        allowsBackForwardNavigationGestures: true,
-
-        /// IOS 빌드간 설정 확인
-        isInspectable: true,
-      ),
-
-      /// 유저 스크립트 설정
-      initialUserScripts: UnmodifiableListView<UserScript>([
-        /// TODO : 스크립트 주입 여부 확인
-      ]),
+      /// 유저 스크립트 설정 - 스크립트 주입 여부 확인 필요
+      initialUserScripts: UnmodifiableListView<UserScript>([]),
 
       /// HTTP 에러 핸들링
       onReceivedHttpError: (controller, request, errorResponse) {
@@ -105,92 +57,12 @@ class WebViewWidget extends StatelessWidget {
         /// TODO : 기능 확인 필요
         getXController.handleInitialUri();
 
-        /// 웹뷰에서 보내는 메시지 처리 핸들러
-        controller.addJavaScriptHandler(
-            handlerName: 'onWebViewMessage',
-            callback: (args) async {
-              if (args.isNotEmpty) {
-                try {
-                  final String messageString = args[0];
-                  final Map<String, dynamic> message = jsonDecode(messageString);
-                  final String messageType = message['type'];
-                  final dynamic messageData = message['data'];
-                  CommonUtil.logger.d('웹에서 받은 메시지: ${message['type']} | ${message['data']}');
-
-                  /// 메시지 타입에 따른 처리
-                  switch (messageType) {
-
-                    case 'WEB_READY':
-                      CommonUtil.logger.d('웹뷰 준비됨 >> $messageData');
-                      break;
-
-
-                    case 'REQUEST_FCM_TOKEN':
-                      CommonUtil.logger.d('FCM 토큰 요청 >> $messageData');
-                      try {
-                        String fcmToken = Prefs.fcmToken.get();
-                        return {'status': 'success', 'token': fcmToken};
-                      } catch (e) {
-                        CommonUtil.logger.e('FCM 토큰 요청 오류: $e');
-                        return {'status': 'error', 'message': e.toString()};
-                      }
-
-                    case 'REQUEST_PERMISSION':
-                      CommonUtil.logger.d('권한 요청 >> $messageData');
-                      final String permissionType = messageData['type'];
-                      switch (permissionType) {
-
-                        case 'LOCATION':
-                          final status = await Permission.location.request();
-                          final isGranted = status.isGranted;
-                          return {
-                            'status': isGranted ? 'success' : 'error',
-                            'message': isGranted
-                                ? 'Permission granted'
-                                : 'Location permission denied'
-                          };
-
-                        case 'STORAGE':
-                          final status = await Permission.storage.request();
-                          final isGranted = status.isGranted;
-                          return {
-                            'status': isGranted ? 'success' : 'error',
-                            'message': isGranted
-                                ? 'Permission granted'
-                                : 'Storage permission denied'
-                          };
-
-                        case 'NOTIFICATION':
-                          final status =
-                              await Permission.notification.request();
-                          final isGranted = status.isGranted;
-                          return {
-                            'status': isGranted ? 'success' : 'error',
-                            'message': isGranted
-                                ? 'Permission granted'
-                                : 'Notification permission denied'
-                          };
-
-                        default:
-                          return {
-                            'status': 'error',
-                            'message': '알 수 없는 권한 타입: $permissionType'
-                          };
-                      }
-                  }
-                  return {'status': 'success', 'received': true};
-                } catch (e) {
-                  debugPrint('메시지 처리 오류: $e');
-                  return {'status': 'error', 'message': e.toString()};
-                }
-              }
-              return {'status': 'error', 'message': 'Invalid message'};
-            });
+        /// 웹뷰 핸들러 등록
+        WebViewHandlers.registerHandlers(controller, getXController);
       },
 
       /// 콘솔 메시지 받기
-      onConsoleMessage: (controller, consoleMessage) async {
-      },
+      onConsoleMessage: (controller, consoleMessage) async {},
 
       /// SSL 인증서
       onReceivedServerTrustAuthRequest: (controller, challenge) async {
@@ -200,7 +72,7 @@ class WebViewWidget extends StatelessWidget {
       /// 새 창 띄우기
       onCreateWindow: (controller, createWindowRequest) async {
         Uri? uri = createWindowRequest.request.url;
-        if(uri != null){
+        if (uri != null) {
           launchUrl(uri);
         }
         return true;

@@ -26,6 +26,9 @@ void main() async {
   /// 위젯 생성
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
+  /// 1차 스플래시 유지
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   /// .env 파일 로딩
   await dotenv.load(fileName: "lib/.env");
 
@@ -34,18 +37,12 @@ void main() async {
 
   MobileAds.instance.updateRequestConfiguration(
     RequestConfiguration(
-
-      /// TODO : 실기기 테스트 시 기기 등록 필요
-      testDeviceIds: [],
+      testDeviceIds: [] /// 실기기 테스트 시 기기 등록 필요
     ),
   );
 
-
   /// 저장 공간 권한 요청 추가
   await Permission.storage.request();
-
-  /// 1차 스플래시 유지
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   /// 파이어베이스 초기화
   await Firebase.initializeApp(

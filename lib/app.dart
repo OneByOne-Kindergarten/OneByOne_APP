@@ -8,6 +8,7 @@ import 'package:flutter_app_badge/flutter_app_badge.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:one_by_one/common/app_page_url.dart';
+import 'package:one_by_one/common/common_util.dart';
 import 'package:one_by_one/common/pref/app_pref.dart';
 import 'package:one_by_one/screen/webview_screen.dart';
 import 'package:one_by_one/theme/app_theme.dart';
@@ -102,8 +103,8 @@ Future<void> _setVersion() async {
     await Prefs.operatingSystem.set("AOS");
   }
 
-  debugPrint("앱 버전 : ${Prefs.appBundleVersionRx.get()}");
-  debugPrint("현재 운영 체제 : ${Prefs.operatingSystem.get()}");
+  CommonUtil.logger.d("앱 버전 : ${Prefs.appBundleVersionRx.get()}");
+  CommonUtil.logger.d("현재 운영 체제 : ${Prefs.operatingSystem.get()}");
 }
 
 
@@ -111,14 +112,14 @@ Future<void> _setVersion() async {
 void getMyDeviceToken() async {
     String? token = await FirebaseMessaging.instance.getToken();
     await Prefs.fcmToken.set(token!);
-    debugPrint("토큰 설정 완료 : ${Prefs.fcmToken.get()}");
+    CommonUtil.logger.d("토큰 설정 완료 : ${Prefs.fcmToken.get()}");
 }
 
 
 /// 푸시 알림 뱃지 지우기
 Future<void> _deleteBadge() async {
   await FlutterAppBadge.count(0);
-  debugPrint("뱃지 삭제");
+  CommonUtil.logger.d("뱃지 삭제");
 }
 
 /// TODO : 배포 시 스토어 URL 적용
