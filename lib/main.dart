@@ -2,16 +2,18 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_by_one/app.dart';
 import 'package:one_by_one/common/app_notification.dart';
 import 'package:one_by_one/common/pref/app_preferences.dart';
 import 'package:one_by_one/firebase_options.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:one_by_one/service/ad_scheduler_service.dart';
 
 /// 백그라운드 메시지 수신 호출 콜백 함수 - 엔트리 포인트
 @pragma('vm:entry-point')
@@ -76,4 +78,7 @@ void main() async {
 
   /// APP 실행
   runApp(const App());
+
+  /// 광고 스케줄러 서비스 초기화 - App이 실행된 후 초기화
+  await Get.putAsync(() => AdSchedulerService().init());
 }

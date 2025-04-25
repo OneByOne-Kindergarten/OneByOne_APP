@@ -113,6 +113,7 @@ void getMyDeviceToken() async {
     String? token = await FirebaseMessaging.instance.getToken();
     await Prefs.fcmToken.set(token!);
     CommonUtil.logger.d("토큰 설정 완료 : ${Prefs.fcmToken.get()}");
+    print("토큰 설정 완료 : ${Prefs.fcmToken.get()}");
 }
 
 

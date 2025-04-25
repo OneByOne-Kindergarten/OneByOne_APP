@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:get/get.dart';
 import 'package:one_by_one/common/ad_helper.dart';
+import 'package:one_by_one/controller/webview_controller.dart';
 
 /// 배너 광고 위젯
 class BottomBannerAdWidget extends StatefulWidget {
@@ -17,9 +19,14 @@ class _BottomBannerAdWidgetState extends State<BottomBannerAdWidget> {
   /// 배너 광고 로드 여부
   bool _isAdLoaded = false;
 
+  /// 웹뷰 컨트롤러
+  late final WebViewController _webViewController;
+
   @override
   void initState() {
     super.initState();
+    // 웹뷰 컨트롤러 가져오기
+    _webViewController = Get.find<WebViewController>();
     _loadBannerAd();
   }
 
@@ -41,18 +48,21 @@ class _BottomBannerAdWidgetState extends State<BottomBannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return (_isAdLoaded && _bannerAd != null)
+    return Obx(() {
+      
+      final adHeight = (_isAdLoaded && _bannerAd != null)
+          ? _bannerAd!.size.height.toDouble()
+          : 50.0;
 
-        /// 배너 광고
-        ? Container(
-            color: Colors.transparent,
-            alignment: Alignment.center,
-            width: double.infinity,
-            height: _bannerAd!.size.height.toDouble(),
-            child: AdWidget(ad: _bannerAd!),
-          )
-
-        /// 광고 로드 이전
-        : const SizedBox(width: double.infinity, height: 50);
+      // 광고 표시 여부에 따라 실제 광고 또는 빈 컨테이너 반환
+      return Container(
+        width: double.infinity,
+        height: adHeight,
+        color: Colors.transparent,
+        child: (_isAdLoaded && _bannerAd != null && _webViewController.showBottomBanner.value)
+            ? AdWidget(ad: _bannerAd!)
+            : const SizedBox.shrink(),
+      );
+    });
   }
 }

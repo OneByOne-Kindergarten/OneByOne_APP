@@ -32,4 +32,7 @@ class Prefs {
   
   /// 마지막 앱 실행 시간 - 전면광고
   static final lastAppRunTime = RxPreferenceItem<String, RxString>('lastAppRunTime', '');
+  
+  /// 마지막 접이식 배너 광고 표시 시간
+  static final lastCollapsibleBannerAdTime = RxPreferenceItem<String, RxString>('lastCollapsibleBannerAdTime', '');
 }

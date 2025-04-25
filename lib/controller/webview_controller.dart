@@ -37,6 +37,19 @@ class WebViewController extends GetxController {
 
   /// 웹뷰 초기 로드 완료 여부
   final RxBool isInitialLoadComplete = false.obs;
+  
+  /// 하단 배너 표시 여부
+  final RxBool showBottomBanner = true.obs;
+  
+  /// 하단 배너 숨기기
+  void hideBottomBanner() {
+    showBottomBanner.value = false;
+  }
+  
+  /// 하단 배너 표시
+  void displayBottomBanner() {
+    showBottomBanner.value = true;
+  }
 
   @override
   void onInit() {

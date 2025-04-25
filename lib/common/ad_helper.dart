@@ -16,6 +16,10 @@ class AdHelper {
   static const String testBannerAdUnitIdIOS = 'ca-app-pub-3940256099942544/2934735716';
   static const String testInterstitialAdUnitIdAndroid = 'ca-app-pub-3940256099942544/1033173712';
   static const String testInterstitialAdUnitIdIOS = 'ca-app-pub-3940256099942544/4411468910';
+  
+  /// 접이식 배너 테스트 광고 ID
+  static const String testCollapsibleBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/2014213617';
+  static const String testCollapsibleBannerAdUnitIdIOS = 'ca-app-pub-3940256099942544/8388050270';
 
   /// 배너 광고 ID
   static String get bannerAdUnitId {
@@ -27,6 +31,21 @@ class AdHelper {
       return dotenv.env['ADMOB_BANNER_ID_ANDROID'] ?? testBannerAdUnitIdAndroid;
     } else if (Platform.isIOS) {
       return dotenv.env['ADMOB_BANNER_ID_IOS'] ?? testBannerAdUnitIdIOS;
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+  }
+  
+  /// 접이식 배너 광고 ID
+  static String get collapsibleBannerAdUnitId {
+    if (isDev) {
+      return Platform.isAndroid ? testCollapsibleBannerAdUnitIdAndroid : testCollapsibleBannerAdUnitIdIOS;
+    }
+    
+    if (Platform.isAndroid) {
+      return dotenv.env['ADMOB_BANNER_ID_ANDROID'] ?? testCollapsibleBannerAdUnitIdAndroid;
+    } else if (Platform.isIOS) {
+      return dotenv.env['ADMOB_INTERSTITIAL_ID_IOS'] ?? testCollapsibleBannerAdUnitIdIOS;
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -63,10 +82,32 @@ class AdHelper {
     return difference.inHours >= 2;
   }
   
+  /// 접이식 배너 광고 표시 여부 확인 (45분 주기)
+  static bool shouldShowCollapsibleBannerAd() {
+    final String lastTimeStr = Prefs.lastCollapsibleBannerAdTime.get();
+    if (lastTimeStr.isEmpty) {
+      /// 첫 실행에도 광고 노출
+      return true;
+    }
+
+    final DateTime lastTime = DateTime.parse(lastTimeStr);
+    final DateTime now = DateTime.now();
+    final Duration difference = now.difference(lastTime);
+
+    /// 45분
+    return difference.inMinutes >= 45;
+  }
+  
   /// 현재 시간을 저장
   static void updateLastAppRunTime() {
     final now = DateTime.now().toIso8601String();
     Prefs.lastAppRunTime.set(now);
+  }
+  
+  /// 접이식 배너 광고 표시 시간 저장
+  static void updateLastCollapsibleBannerAdTime() {
+    final now = DateTime.now().toIso8601String();
+    Prefs.lastCollapsibleBannerAdTime.set(now);
   }
   
   /// 배너 광고 로드
