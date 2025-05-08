@@ -34,7 +34,7 @@ dependencies:
   # 플러터 SVG 아이콘
   flutter_svg: ^2.0.9
 
-    # 버전 확인
+  # 버전 확인
   package_info_plus: ^4.2.0
   device_info_plus: ^9.1.2
 
@@ -72,6 +72,9 @@ dependencies:
 
   # 뒤로가기 버튼 제어
   back_button_interceptor: ^8.0.4
+
+  # 위치 정보
+  geolocator: ^13.0.2
 
 dev_dependencies:
   flutter_test:

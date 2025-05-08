@@ -8,6 +8,9 @@ class WebViewSettings {
   static InAppWebViewSettings get defaultSettings {
     return InAppWebViewSettings(
 
+      /// UserAgent 추가
+      applicationNameForUserAgent: "OneByOne",
+
       /// IOS 유투브 전체화면 방지
       isElementFullscreenEnabled: Platform.isAndroid ? true : false,
 
@@ -48,6 +51,9 @@ class WebViewSettings {
       limitsNavigationsToAppBoundDomains: true,
       allowsInlineMediaPlayback: true,
       allowsBackForwardNavigationGestures: true,
+
+      /// 쿠키 관련 설정
+      useShouldInterceptRequest: true,
 
       /// IOS 빌드간 설정 확인
       isInspectable: true,

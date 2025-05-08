@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:one_by_one/common/common_util.dart';
 import 'package:one_by_one/common/pref/app_pref.dart';
@@ -39,6 +40,18 @@ class WebViewHandlers {
               case 'REQUEST_PERMISSION':
                 CommonUtil.logger.d('권한 요청 >> $messageData');
                 return await _handlePermissionRequest(messageData);
+
+              case 'REQUEST_LAT_LONG':
+                var locationStatus = await Permission.location.status;
+                if (locationStatus.isDenied || locationStatus.isPermanentlyDenied) {
+                  locationStatus = await Permission.location.request();
+                }
+                if (locationStatus == PermissionStatus.granted) {
+                  Position position = await Geolocator.getCurrentPosition(locationSettings: LocationSettings(accuracy: LocationAccuracy.high));
+                  return {'status': 'true' , 'lat' : position.latitude.toString() , 'long' : position.longitude.toString()};
+                } else {
+                  return {'status': 'false', 'lat' : '0', 'long': '0'};
+                }
 
               default:
                 return {'status': 'success', 'received': true};
