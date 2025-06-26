@@ -24,11 +24,10 @@ class WebViewScreen extends GetView<WebViewController> {
 
     /// 웹뷰 스크린
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.backgroundColor,
       body: Stack(
         children: [
-
           /// 웹뷰 스크린
           SafeArea(
             child: Column(
