@@ -24,6 +24,12 @@ class WebViewController extends GetxController {
   /// 전면 광고
   InterstitialAd? _interstitialAd;
 
+  /// 배너 광고
+  final Rx<BannerAd?> bannerAd = Rx<BannerAd?>(null);
+
+  /// 배너 광고 로드 여부
+  final RxBool isAdLoaded = false.obs;
+
   /// WebView Key
   final GlobalKey webViewKey = GlobalKey();
 
@@ -33,7 +39,7 @@ class WebViewController extends GetxController {
   late final InAppWebViewController webViewController;
 
   /// WebView URL - RxString
-  final RxString myUrl = "$baseUrl/".obs;
+  final RxString myUrl = "${PageUrl.baseUrl}/".obs;
 
   /// 웹뷰 초기 로드 완료 여부
   final RxBool isInitialLoadComplete = false.obs;
@@ -65,6 +71,9 @@ class WebViewController extends GetxController {
     /// 전면 광고 초기화
     _initInterstitialAd();
 
+    /// 배너 광고 초기화
+    _initBannerAd();
+
     /// 마지막 실행 시간 저장
     AdHelper.updateLastAppRunTime();
 
@@ -84,6 +93,9 @@ class WebViewController extends GetxController {
 
     /// 딥링크 스트림 구독 해제
     _sub?.cancel();
+
+    /// 배너 광고 해제
+    bannerAd.value?.dispose();
 
     super.onClose();
   }
@@ -130,6 +142,14 @@ class WebViewController extends GetxController {
     } else {
       CommonUtil.logger.d("전면 광고 표시 조건 미충족 >> 2시간 미만 경과");
     }
+  }
+
+  /// 배너 광고 초기화
+  void _initBannerAd() {
+    bannerAd.value = AdHelper.createBannerAd()
+      ..load().then((value) {
+        isAdLoaded.value = true;
+      });
   }
 
   /// 웹뷰 URL 변경 메서드
