@@ -9,6 +9,10 @@
     <!-- 카메라 권한 설정 -->
     <uses-permission android:name="android.permission.CAMERA"/>
 
+    <!-- 위치 권한 설정 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:label="원바원"
         android:name="${applicationName}"
