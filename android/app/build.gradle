@@ -16,6 +16,12 @@ if (localPropertiesFile.exists()) {
 
 def adMobAppId = localProperties.getProperty('admob.app.id')
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.kindergarten.onebyone.one_by_one"
     compileSdk = flutter.compileSdkVersion
@@ -34,19 +40,27 @@ android {
         applicationId = "com.kindergarten.onebyone.one_by_one"
         minSdk = 30
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode // TODO : local.properties 버전 코드 확인 필요
-        versionName = flutter.versionName // TODO : local.properties 버전 이름 확인 필요
+        /// TODO : 안드로이드 버전코드 변경
+        versionCode = 2
+        versionName = "1.0.0"
 
         manifestPlaceholders += [
                 adMobApplicationId: adMobAppId ?: "ca-app-pub-3940256099942544~3347511713",
         ]
     }
 
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig = signingConfigs.release
         }
     }
 }
