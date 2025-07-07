@@ -9,7 +9,7 @@ import 'package:one_by_one/common/pref/app_pref.dart';
 class AdHelper {
 
   /// 개발 환경 여부
-  static bool isDev = true;
+  static bool isDev = false;
 
   /// 테스트 광고 ID
   static const String testBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/6300978111';
@@ -43,9 +43,9 @@ class AdHelper {
     }
     
     if (Platform.isAndroid) {
-      return dotenv.env['ADMOB_BANNER_ID_ANDROID'] ?? testCollapsibleBannerAdUnitIdAndroid;
+      return dotenv.env['ADMOB_COLLAPSIBLE_BANNER_ID_IOS'] ?? testCollapsibleBannerAdUnitIdAndroid;
     } else if (Platform.isIOS) {
-      return dotenv.env['ADMOB_INTERSTITIAL_ID_IOS'] ?? testCollapsibleBannerAdUnitIdIOS;
+      return dotenv.env['ADMOB_COLLAPSIBLE_BANNER_ID_IOS'] ?? testCollapsibleBannerAdUnitIdIOS;
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -64,6 +64,12 @@ class AdHelper {
     } else {
       throw UnsupportedError('Unsupported platform');
     }
+  }
+
+  /// 앱 시작 시간 저장
+  static void saveAppStartTime() {
+    final now = DateTime.now().toIso8601String();
+    Prefs.appStartTime.set(now);
   }
 
   /// 광고 표시 여부 확인

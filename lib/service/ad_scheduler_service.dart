@@ -43,7 +43,7 @@ class AdSchedulerService extends GetxService {
     // 앱이 처음 실행되었을 때 조건 확인
     if (AdHelper.shouldShowCollapsibleBannerAd()) {
       // 10초 지연 후 광고 표시 (앱 시작 직후에는 표시하지 않도록)
-      Future.delayed(const Duration(seconds: 10), () {
+      Future.delayed(const Duration(seconds: 15), () {
         if (Get.context != null && Get.overlayContext != null) {
           _showCollapsibleBannerAd();
         }

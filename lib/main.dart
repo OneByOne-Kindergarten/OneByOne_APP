@@ -14,6 +14,7 @@ import 'package:one_by_one/common/pref/app_preferences.dart';
 import 'package:one_by_one/firebase_options.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:one_by_one/service/ad_scheduler_service.dart';
+import 'package:one_by_one/common/ad_helper.dart';
 
 /// 백그라운드 메시지 수신 호출 콜백 함수 - 엔트리 포인트
 @pragma('vm:entry-point')
@@ -39,7 +40,9 @@ void main() async {
 
   MobileAds.instance.updateRequestConfiguration(
     RequestConfiguration(
-      testDeviceIds: [] /// 실기기 테스트 시 기기 등록 필요
+      testDeviceIds: [
+        "21bf83d0790478cd54944d5c3bc86c55",
+      ]
     ),
   );
 
@@ -56,6 +59,9 @@ void main() async {
 
   /// 앱 알림 설정 파일 로드
   await AppPreferences.init();
+
+  /// 앱 시작 시간 저장
+  AdHelper.saveAppStartTime();
 
   if (Platform.isAndroid) {
     // 디버그 모드 개발자 도구 사용 설정

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:app_links/app_links.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
@@ -9,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_by_one/common/ad_helper.dart';
 import 'package:one_by_one/common/common_util.dart';
-import 'package:one_by_one/common/pref/app_pref.dart';
 
 import '../common/app_page_url.dart';
 
@@ -45,21 +45,13 @@ class WebViewController extends GetxController {
   final RxBool isInitialLoadComplete = false.obs;
   
   /// 하단 배너 표시 여부
-  final RxBool showBottomBanner = true.obs;
+  final RxBool showBottomBanner = false.obs;
   
-  /// 하단 배너 숨기기
-  void hideBottomBanner() {
-    showBottomBanner.value = false;
-  }
-  
-  /// 하단 배너 표시
-  void displayBottomBanner() {
-    showBottomBanner.value = true;
-  }
+  /// 전면 광고 타이머
+  Timer? _interstitialAdTimer;
 
   @override
   void onInit() {
-
     /// 웹뷰 디버깅 로그 관리
     PlatformInAppWebViewController.debugLoggingSettings.excludeFilter.addAll(
         [
@@ -68,8 +60,11 @@ class WebViewController extends GetxController {
         ]
     );
 
-    /// 전면 광고 초기화
-    _initInterstitialAd();
+    /// 전면 광고 초기화 - 5~10분 사이 랜덤
+    final randomMinutes = 5 + math.Random().nextInt(6); // 5~10 사이 랜덤
+    _interstitialAdTimer = Timer(Duration(minutes: randomMinutes), () {
+      _initInterstitialAd();
+    });
 
     /// 배너 광고 초기화
     _initBannerAd();
@@ -97,6 +92,9 @@ class WebViewController extends GetxController {
     /// 배너 광고 해제
     bannerAd.value?.dispose();
 
+    /// 전면 광고 타이머 해제
+    _interstitialAdTimer?.cancel();
+
     super.onClose();
   }
 
@@ -117,39 +115,45 @@ class WebViewController extends GetxController {
   /// 전면 광고 초기화
   void _initInterstitialAd() async {
     if (AdHelper.shouldShowInterstitialAd()) {
-      CommonUtil.logger.d("전면 광고 표시 조건 충족 >> ${Prefs.lastAppRunTime.get().isEmpty ? "첫 실행" : "2시간 이상 경과"}");
-    _interstitialAd = await AdHelper.loadInterstitialAd();
+      CommonUtil.logger.d("전면 광고 표시 조건 충족");
+      _interstitialAd = await AdHelper.loadInterstitialAd();
 
-    /// 전면광고 노출
-    if (_interstitialAd != null) {
-      CommonUtil.logger.d(" 전면 광고 로드 성공");
-      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (ad) {
-          ad.dispose();
-        },
-        onAdFailedToShowFullScreenContent: (ad, error) {
-          CommonUtil.logger.e("전면 광고 표시 실패 >> $error");
-          ad.dispose();
-        },
-      );
+      /// 전면광고 노출
+      if (_interstitialAd != null) {
+        CommonUtil.logger.d("전면 광고 로드 성공");
+        _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+          onAdDismissedFullScreenContent: (ad) {
+            ad.dispose();
+          },
+          onAdFailedToShowFullScreenContent: (ad, error) {
+            CommonUtil.logger.e("전면 광고 표시 실패 >> $error");
+            ad.dispose();
+          },
+        );
 
-      Future.delayed(const Duration(seconds: 2), () {
-        CommonUtil.logger.d("전면 광고 표시!!");
-        _interstitialAd?.show();
-      });
-
-    }
+        Future.delayed(const Duration(seconds: 2), () {
+          CommonUtil.logger.d("전면 광고 표시!!");
+          _interstitialAd?.show();
+        });
+      }
     } else {
-      CommonUtil.logger.d("전면 광고 표시 조건 미충족 >> 2시간 미만 경과");
+      CommonUtil.logger.d("전면 광고 표시 조건 미충족");
     }
   }
 
   /// 배너 광고 초기화
   void _initBannerAd() {
-    bannerAd.value = AdHelper.createBannerAd()
-      ..load().then((value) {
-        isAdLoaded.value = true;
-      });
+    final BannerAd banner = AdHelper.createBannerAd();
+    
+    banner.load().then((value) {
+      bannerAd.value = banner;
+      isAdLoaded.value = true;
+      showBottomBanner.value = true;
+    }).catchError((error) {
+      CommonUtil.logger.e("배너 광고 로드 실패 >> $error");
+      isAdLoaded.value = false;
+      showBottomBanner.value = false;
+    });
   }
 
   /// 웹뷰 URL 변경 메서드
@@ -186,5 +190,17 @@ class WebViewController extends GetxController {
   void setInitialLoadComplete() async {
     await Future.delayed(const Duration(milliseconds: 1500));
     isInitialLoadComplete.value = true;
+  }
+
+  /// 하단 배너 숨기기
+  void hideBottomBanner() {
+    showBottomBanner.value = false;
+  }
+  
+  /// 하단 배너 표시
+  void displayBottomBanner() {
+    if (isAdLoaded.value) {
+      showBottomBanner.value = true;
+    }
   }
 }
