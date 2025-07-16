@@ -54,6 +54,35 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	
+	<!-- 외부 앱 실행을 위한 URL 스키마 등록 -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<!-- 카카오톡 -->
+		<string>kakaotalk</string>
+		<string>kakaokompassauth</string>
+		<string>storykompassauth</string>
+		<string>kakaolink</string>
+		<!-- 네이버 -->
+		<string>naversearchapp</string>
+		<string>naversearchthirdlogin</string>
+		<string>navercafe</string>
+		<string>naverline</string>
+		<!-- 기타 소셜 로그인 -->
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>twitter</string>
+		<string>twitterauth</string>
+		<string>instagram</string>
+		<string>instagram-stories</string>
+		<!-- 기본 앱들 -->
+		<string>tel</string>
+		<string>sms</string>
+		<string>mailto</string>
+		<string>http</string>
+		<string>https</string>
+	</array>
+	
     <!-- 위치 권한 설명 -->
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>원바원은 귀하의 현재 위치를 기반으로 서비스를 제공하기 위해 위치 정보 접근 권한이 필요합니다.</string>

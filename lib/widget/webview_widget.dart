@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:one_by_one/common/common_util.dart';
@@ -15,6 +16,9 @@ import 'package:one_by_one/common/webview/webview_handlers.dart';
 /// 웹뷰 위젯
 class WebViewWidget extends StatelessWidget {
   const WebViewWidget({super.key, required this.initUrl});
+
+  /// 인텐트 수정 메서드 채널
+  static const methodChannel = MethodChannel('PARSE_INTENT');
 
   /// 초기 URL
   final URLRequest initUrl;
@@ -81,15 +85,39 @@ class WebViewWidget extends StatelessWidget {
       /// 네이티브 링크 연결 설정
       /// TODO : 이후 기능 대비 확장 필요
       shouldOverrideUrlLoading: (controller, navigationAction) async {
-        var uri = navigationAction.request.url;
-        if (uri == null) return NavigationActionPolicy.CANCEL;
+        var url = navigationAction.request.url;
 
-        if (!["http", "https", "file", "chrome", "data", "javascript", "about"]
-            .contains(uri.scheme)) {
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri);
+        /// 딥링크 - IOS
+        if (url != null &&!["https","http","intent"].contains(url.scheme) && Platform.isIOS) {
+          debugPrint("URL SCHEMA1 >> ${url.scheme}");
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+            return NavigationActionPolicy.CANCEL;
+          }else {
+            debugPrint("오픈 안됨 >> ${url.rawValue}");
             return NavigationActionPolicy.CANCEL;
           }
+
+        /// 딥링크 - AOS
+        } else if(url != null && ["intent"].contains(url.scheme)){
+          debugPrint("URL SCHEMA2 >> ${url.scheme}");
+          await controller.stopLoading();
+          try {
+            // 안드로이드 인텐트 파싱
+            final parsedIntent = await methodChannel.invokeMethod('getAppUrl', {'url': url.rawValue});
+
+            // WebUri 사용하여 대문자 유지
+            if (await canLaunchUrl(WebUri(parsedIntent, forceToStringRawValue: true))) {
+              launchUrl(WebUri(parsedIntent, forceToStringRawValue: true), mode: LaunchMode.externalApplication);
+            } else {
+              final marketUrl = await methodChannel.invokeMethod('getMarketUrl', {'url': url.rawValue});
+              launchUrl(WebUri(marketUrl, forceToStringRawValue: true), mode: LaunchMode.externalApplication);
+            }
+          } on PlatformException catch (e) {
+            debugPrint('${e.message}');
+          }
+          return NavigationActionPolicy.CANCEL;
+          /// 딥링크 - AOS + 인코딩 되어 있는 인텐트
         }
 
         return NavigationActionPolicy.ALLOW;

@@ -4,11 +4,25 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 /// 웹뷰 설정을 관리하는 클래스
 class WebViewSettings {
 
+  /// 플랫폼별 UserAgent 생성
+  static String get _platformUserAgent {
+    if (Platform.isIOS) {
+      return "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
+    } else if (Platform.isAndroid) {
+      return "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
+    } else {
+      return "";
+    }
+  }
+
   /// 웹뷰 기본 설정
   static InAppWebViewSettings get defaultSettings {
     return InAppWebViewSettings(
 
-      /// UserAgent 추가
+      /// UserAgent 설정
+      userAgent: _platformUserAgent,
+
+      /// 앱 식별을 위한 추가 정보
       applicationNameForUserAgent: "OneByOne",
 
       /// IOS 유투브 전체화면 방지
