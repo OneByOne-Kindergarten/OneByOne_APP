@@ -98,7 +98,19 @@ class WebViewWidget extends StatelessWidget {
             return NavigationActionPolicy.CANCEL;
           }
 
-        /// 딥링크 - AOS
+        /// 딥링크 - AOS (커스텀 스키마)
+        } else if (url != null && !["https","http","intent"].contains(url.scheme) && Platform.isAndroid) {
+          debugPrint("URL SCHEMA_ANDROID3 >> ${url.scheme}");
+          await controller.stopLoading();
+          
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+          } else {
+            debugPrint("커스텀 스키마 오픈 안됨 >> ${url.rawValue}");
+          }
+          return NavigationActionPolicy.CANCEL;
+
+        /// 딥링크 - AOS (intent 스키마)
         } else if(url != null && ["intent"].contains(url.scheme)){
           debugPrint("URL SCHEMA2 >> ${url.scheme}");
           await controller.stopLoading();

@@ -76,5 +76,71 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        
+        <!-- 네이버 관련 스키마 -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="naversearchapp" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="naversearchthirdlogin" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="navercafe" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="naverline" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="nidlogin" />
+        </intent>
+        
+        <!-- 카카오 관련 스키마 -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="kakaotalk" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="kakaokompassauth" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="storykompassauth" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="kakaolink" />
+        </intent>
+        
+        <!-- 기타 소셜 로그인 스키마 -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="fbapi" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="fb-messenger-share-api" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="twitter" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="twitterauth" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="instagram" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="instagram-stories" />
+        </intent>
     </queries>
 </manifest>
