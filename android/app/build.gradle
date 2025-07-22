@@ -24,24 +24,24 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.kindergarten.onebyone.one_by_one"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = JavaVersion.VERSION_17
     }
 
     defaultConfig {
         applicationId = "com.kindergarten.onebyone.one_by_one"
         minSdk = 30
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 35
         /// TODO : 안드로이드 버전코드 변경
-        versionCode = 2
+        versionCode = 3
         versionName = "1.0.0"
 
         manifestPlaceholders += [
