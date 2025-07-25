@@ -43,7 +43,7 @@ class AdHelper {
     }
     
     if (Platform.isAndroid) {
-      return dotenv.env['ADMOB_COLLAPSIBLE_BANNER_ID_IOS'] ?? testCollapsibleBannerAdUnitIdAndroid;
+      return dotenv.env['ADMOB_COLLAPSIBLE_BANNER_ID_ANDROID'] ?? testCollapsibleBannerAdUnitIdAndroid;
     } else if (Platform.isIOS) {
       return dotenv.env['ADMOB_COLLAPSIBLE_BANNER_ID_IOS'] ?? testCollapsibleBannerAdUnitIdIOS;
     } else {
