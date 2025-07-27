@@ -59,7 +59,7 @@ dependencies:
   url_launcher: ^6.2.1
 
   # 애드몹 광고
-  google_mobile_ads: ^6.0.0
+  google_mobile_ads: ^4.0.0
 
   # 로그
   logger: ^2.4.0

@@ -9,7 +9,7 @@ import 'package:one_by_one/common/pref/app_pref.dart';
 class AdHelper {
 
   /// 개발 환경 여부
-  static bool isDev = false;
+  static bool isDev = true;
 
   /// 테스트 광고 ID
   static const String testBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/6300978111';
@@ -24,13 +24,19 @@ class AdHelper {
   /// 배너 광고 ID
   static String get bannerAdUnitId {
     if (isDev) {
-      return Platform.isAndroid ? testBannerAdUnitIdAndroid : testBannerAdUnitIdIOS;
+      final testId = Platform.isAndroid ? testBannerAdUnitIdAndroid : testBannerAdUnitIdIOS;
+      CommonUtil.logger.d('🔹 테스트 광고 ID 사용: $testId');
+      return testId;
     }
     
     if (Platform.isAndroid) {
-      return dotenv.env['ADMOB_BANNER_ID_ANDROID'] ?? testBannerAdUnitIdAndroid;
+      final realId = dotenv.env['ADMOB_BANNER_ID_ANDROID'] ?? testBannerAdUnitIdAndroid;
+      CommonUtil.logger.d('🔸 실제 안드로이드 광고 ID 사용: $realId');
+      return realId;
     } else if (Platform.isIOS) {
-      return dotenv.env['ADMOB_BANNER_ID_IOS'] ?? testBannerAdUnitIdIOS;
+      final realId = dotenv.env['ADMOB_BANNER_ID_IOS'] ?? testBannerAdUnitIdIOS;
+      CommonUtil.logger.d('🔸 실제 iOS 광고 ID 사용: $realId');
+      return realId;
     } else {
       throw UnsupportedError('Unsupported platform');
     }
