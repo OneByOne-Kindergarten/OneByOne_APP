@@ -114,6 +114,8 @@ class WebViewController extends GetxController {
 
   /// 전면 광고 초기화
   void _initInterstitialAd() async {
+    if (!AdHelper.isAdEnabled) return;
+    
     if (AdHelper.shouldShowInterstitialAd()) {
       CommonUtil.logger.d("전면 광고 표시 조건 충족");
       _interstitialAd = await AdHelper.loadInterstitialAd();
@@ -143,7 +145,13 @@ class WebViewController extends GetxController {
 
   /// 배너 광고 초기화
   void _initBannerAd() {
-    final BannerAd banner = AdHelper.createBannerAd();
+    final BannerAd? banner = AdHelper.createBannerAd();
+    
+    if (banner == null) {
+      isAdLoaded.value = false;
+      showBottomBanner.value = false;
+      return;
+    }
     
     banner.load().then((value) {
       bannerAd.value = banner;

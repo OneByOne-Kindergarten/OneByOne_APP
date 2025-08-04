@@ -11,6 +11,9 @@ class AdHelper {
   /// 개발 환경 여부
   static bool isDev = true;
 
+  /// 광고 활성화 여부 (스토어 심사 시 false로 설정)
+  static bool isAdEnabled = false;
+
   /// 테스트 광고 ID
   static const String testBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/6300978111';
   static const String testBannerAdUnitIdIOS = 'ca-app-pub-3940256099942544/2934735716';
@@ -80,6 +83,7 @@ class AdHelper {
 
   /// 광고 표시 여부 확인
   static bool shouldShowInterstitialAd() {
+    if (!isAdEnabled) return false;
     final String lastTimeStr = Prefs.lastAppRunTime.get();
     if (lastTimeStr.isEmpty) {
       /// 첫 실행에도 광고 노출
@@ -96,6 +100,7 @@ class AdHelper {
   
   /// 접이식 배너 광고 표시 여부 확인 (45분 주기)
   static bool shouldShowCollapsibleBannerAd() {
+    if (!isAdEnabled) return false;
     final String lastTimeStr = Prefs.lastCollapsibleBannerAdTime.get();
     if (lastTimeStr.isEmpty) {
       /// 첫 실행에도 광고 노출
@@ -123,7 +128,8 @@ class AdHelper {
   }
   
   /// 배너 광고 로드
-  static BannerAd createBannerAd() {
+  static BannerAd? createBannerAd() {
+    if (!isAdEnabled) return null;
     return BannerAd(
       adUnitId: bannerAdUnitId,
       size: AdSize.banner,
@@ -142,6 +148,7 @@ class AdHelper {
   
   /// 전면 광고 로드
   static Future<InterstitialAd?> loadInterstitialAd() async {
+    if (!isAdEnabled) return null;
 
     InterstitialAd? interstitialAd;
 

@@ -10,9 +10,9 @@ class BottomBannerAdWidget extends GetView<WebViewController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final adHeight = (controller.isAdLoaded.value && controller.bannerAd.value != null)
+      final adHeight = (controller.isAdLoaded.value && controller.bannerAd.value != null && controller.showBottomBanner.value)
           ? controller.bannerAd.value!.size.height.toDouble()
-          : 50.0;
+          : 0.0;
 
       // 광고 표시 여부에 따라 실제 광고 또는 빈 컨테이너 반환
       return Container(
