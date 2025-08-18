@@ -35,13 +35,16 @@ void main() async {
   /// .env 파일 로딩
   await dotenv.load(fileName: "lib/.env");
 
+  /// iOS 14+ ATT 권한 요청 (광고 초기화 전)
+  await AdHelper.requestTrackingAuthorization();
+
   /// Google Mobile Ads 초기화
   await MobileAds.instance.initialize();
 
   MobileAds.instance.updateRequestConfiguration(
     RequestConfiguration(
       testDeviceIds: [
-        "21bf83d0790478cd54944d5c3bc86c55",
+        "bfa65492efe47ae5e708e3c4f0e2302c",
       ]
     ),
   );

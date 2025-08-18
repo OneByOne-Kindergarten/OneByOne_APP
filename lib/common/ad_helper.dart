@@ -4,15 +4,16 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_by_one/common/common_util.dart';
 import 'package:one_by_one/common/pref/app_pref.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 /// AdMob 광고 관련 헬퍼 클래스
 class AdHelper {
 
   /// 개발 환경 여부
-  static bool isDev = true;
+  static bool isDev = false;
 
-  /// 광고 활성화 여부 (스토어 심사 시 false로 설정)
-  static bool isAdEnabled = false;
+  /// 광고 활성화 여부
+  static bool isAdEnabled = true;
 
   /// 테스트 광고 ID
   static const String testBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/6300978111';
@@ -28,17 +29,17 @@ class AdHelper {
   static String get bannerAdUnitId {
     if (isDev) {
       final testId = Platform.isAndroid ? testBannerAdUnitIdAndroid : testBannerAdUnitIdIOS;
-      CommonUtil.logger.d('🔹 테스트 광고 ID 사용: $testId');
+      print('🔹 테스트 광고 ID 사용: $testId');
       return testId;
     }
     
     if (Platform.isAndroid) {
       final realId = dotenv.env['ADMOB_BANNER_ID_ANDROID'] ?? testBannerAdUnitIdAndroid;
-      CommonUtil.logger.d('🔸 실제 안드로이드 광고 ID 사용: $realId');
+      print('🔸 실제 안드로이드 광고 ID 사용: $realId');
       return realId;
     } else if (Platform.isIOS) {
       final realId = dotenv.env['ADMOB_BANNER_ID_IOS'] ?? testBannerAdUnitIdIOS;
-      CommonUtil.logger.d('🔸 실제 iOS 광고 ID 사용: $realId');
+      print('🔸 실제 iOS 광고 ID 사용: $realId');
       return realId;
     } else {
       throw UnsupportedError('Unsupported platform');
@@ -79,6 +80,22 @@ class AdHelper {
   static void saveAppStartTime() {
     final now = DateTime.now().toIso8601String();
     Prefs.appStartTime.set(now);
+  }
+
+  /// iOS 14+ ATT (App Tracking Transparency) 권한 요청
+  static Future<void> requestTrackingAuthorization() async {
+    if (Platform.isIOS) {
+      /// 권한 요청 전 상태 확인
+      final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+      CommonUtil.logger.d('현재 ATT 권한 상태: $status');
+      
+      /// 권한이 결정되지 않은 경우에만 요청
+      if (status == TrackingStatus.notDetermined) {
+        CommonUtil.logger.d('ATT 권한 요청 시작');
+        final newStatus = await AppTrackingTransparency.requestTrackingAuthorization();
+        CommonUtil.logger.d('ATT 권한 요청 결과: $newStatus');
+      }
+    }
   }
 
   /// 광고 표시 여부 확인
@@ -130,20 +147,38 @@ class AdHelper {
   /// 배너 광고 로드
   static BannerAd? createBannerAd() {
     if (!isAdEnabled) return null;
-    return BannerAd(
-      adUnitId: bannerAdUnitId,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          CommonUtil.logger.d('배너광고 로드 성공 >> ');
-        },
-        onAdFailedToLoad: (ad, error) {
-          CommonUtil.logger.e('배너광고 로드 실패 >> $error');
-          ad.dispose();
-        },
-      ),
-    );
+    try {
+      return BannerAd(
+        adUnitId: bannerAdUnitId,
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: BannerAdListener(
+          onAdLoaded: (ad) {
+            print('배너광고 로드 성공 >> ${ad.adUnitId}');  
+          },
+          onAdFailedToLoad: (ad, error) {
+            print('배너광고 로드 실패 >> 코드: ${error.code}, 메시지: ${error.message}');
+            print('광고 도메인: ${error.domain}');
+            ad.dispose();
+          },
+          onAdOpened: (ad) {
+            print('배너광고 열림 >> ${ad.adUnitId}');
+          },
+          onAdClosed: (ad) {
+            print('배너광고 닫힘 >> ${ad.adUnitId}');
+          },
+          onAdClicked: (ad) {
+            print('배너광고 클릭됨 >> ${ad.adUnitId}');
+          },
+          onAdImpression: (ad) {
+            print('배너광고 노출됨 >> ${ad.adUnitId}');
+          },
+        ),
+      );
+    } catch (e) {
+      CommonUtil.logger.e('배너광고 생성 실패 >> $e');
+      return null;
+    }
   }
   
   /// 전면 광고 로드
@@ -157,11 +192,11 @@ class AdHelper {
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
-          CommonUtil.logger.d('전면 광고 로드 성공 >> ${ad.adUnitId}');
+          print('전면 광고 로드 성공 >> ${ad.adUnitId}');
           ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdShowedFullScreenContent: (ad) => CommonUtil.logger.d('광고 화면에 표시됨 >> ${ad.adUnitId}'),
+            onAdShowedFullScreenContent: (ad) => print('광고 화면에 표시됨 >> ${ad.adUnitId}'),
             onAdDismissedFullScreenContent: (ad) {
-              CommonUtil.logger.d('광고 닫힘 >> ${ad.adUnitId}');
+              print('광고 닫힘 >> ${ad.adUnitId}');
               ad.dispose();
             },
             onAdFailedToShowFullScreenContent: (ad, error) {
@@ -172,7 +207,7 @@ class AdHelper {
 
           // 4초 지연 후 광고 표시
           Future.delayed(Duration(seconds: 4), () {
-            CommonUtil.logger.d('광고 표시 시도 >> ${ad.adUnitId}');
+            print('광고 표시 시도 >> ${ad.adUnitId}');
             ad.show();
           });
         },

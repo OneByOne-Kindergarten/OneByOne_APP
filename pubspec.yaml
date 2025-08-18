@@ -45,10 +45,10 @@ dependencies:
   connectivity_plus: ^5.0.1
 
   # 파이어 베이스
-  firebase_core: ^2.15.0
-  firebase_messaging: ^14.6.5
+  firebase_core: ^4.0.0
+  firebase_messaging: ^16.0.0
   flutter_local_notifications:
-  firebase_analytics: ^10.8.0
+  firebase_analytics: ^12.0.0
 
   # 뱃지 관리
   flutter_app_badge: ^2.0.2
@@ -59,7 +59,9 @@ dependencies:
   url_launcher: ^6.2.1
 
   # 애드몹 광고
-  google_mobile_ads: ^4.0.0
+  google_mobile_ads: ^6.0.0
+  # iOS 14+ ATT 권한
+  app_tracking_transparency: ^2.0.4
 
   # 로그
   logger: ^2.4.0

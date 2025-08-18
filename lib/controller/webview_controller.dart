@@ -145,23 +145,32 @@ class WebViewController extends GetxController {
 
   /// 배너 광고 초기화
   void _initBannerAd() {
-    final BannerAd? banner = AdHelper.createBannerAd();
-    
-    if (banner == null) {
+    try {
+      final BannerAd? banner = AdHelper.createBannerAd();
+
+      if (banner == null) {
+        print("배너 광고 생성 실패");
+        isAdLoaded.value = false;
+        showBottomBanner.value = false;
+        return;
+      }
+
+      banner.load().then((value) {
+        bannerAd.value = banner;
+        isAdLoaded.value = true;
+        showBottomBanner.value = true;
+        print("배너 광고 로드 성공");
+      }).catchError((error) {
+        print("배너 광고 로드 실패 >> $error");
+        banner.dispose();
+        isAdLoaded.value = false;
+        showBottomBanner.value = false;
+      });
+    } catch (e) {
+      print("배너 광고 초기화 예외 발생 >> $e");
       isAdLoaded.value = false;
       showBottomBanner.value = false;
-      return;
     }
-    
-    banner.load().then((value) {
-      bannerAd.value = banner;
-      isAdLoaded.value = true;
-      showBottomBanner.value = true;
-    }).catchError((error) {
-      CommonUtil.logger.e("배너 광고 로드 실패 >> $error");
-      isAdLoaded.value = false;
-      showBottomBanner.value = false;
-    });
   }
 
   /// 웹뷰 URL 변경 메서드
