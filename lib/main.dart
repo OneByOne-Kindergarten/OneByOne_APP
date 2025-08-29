@@ -45,6 +45,7 @@ void main() async {
     RequestConfiguration(
       testDeviceIds: [
         "bfa65492efe47ae5e708e3c4f0e2302c",
+        "71FAB021B4E8E39DF03559DA858CE39E"
       ]
     ),
   );
