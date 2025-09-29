@@ -58,7 +58,6 @@ class WebViewWidget extends StatelessWidget {
         getXController.webViewController = controller;
 
         /// 앱 시작 초기 딥링크 처리
-        /// TODO : 기능 확인 필요
         getXController.handleInitialUri();
 
         /// 웹뷰 핸들러 등록

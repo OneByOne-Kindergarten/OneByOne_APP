@@ -54,6 +54,35 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<!-- URL 스키마 등록 -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<!-- 카카오 URL 스키마 -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>kakao</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao710d90b0aa1084da58f5acf3967c6b15</string>
+				<string>kakaolink</string>
+			</array>
+		</dict>
+
+		<!-- 원바원 딥링크 URL 스키마 -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>onebyone.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>onebyone</string>
+			</array>
+		</dict>
+	</array>
 	
 	<!-- 외부 앱 실행을 위한 URL 스키마 등록 -->
 	<key>LSApplicationQueriesSchemes</key>
@@ -87,18 +116,24 @@
     <key>NSUserTrackingUsageDescription</key>
     <string>원바원은 맞춤형 광고 제공을 위해 광고 ID를 사용합니다.</string>
     
+    <!-- Firebase Analytics 자동 처리 완전 비활성화 -->
+    <key>FirebaseAutomaticScreenReportingEnabled</key>
+    <false/>
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>
+    <key>FirebaseDeepLinkURLScheme</key>
+    <string></string>
+    <key>FirebaseDynamicLinksCustomDomains</key>
+    <array></array>
+    
     <!-- 위치 권한 설명 -->
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>원바원은 귀하의 현재 위치를 기반으로 서비스를 제공하기 위해 위치 정보 접근 권한이 필요합니다.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>원바원은 귀하의 위치를 지속적으로 추적하여 최적의 서비스를 제공하기 위해 위치 정보 접근 권한이 필요합니다.</string>
-    <key>UIApplicationSceneManifest</key>
-    <dict>
-        <key>UIApplicationSupportsMultipleScenes</key>
-        <false/>
-        <key>UISceneConfigurations</key>
-        <dict/>
-    </dict>
+    <!-- Scene 기반 앱 수명주기 비활성화 -->
+    <key>UIApplicationSupportsMultipleScenes</key>
+    <false/>
     <key>SKAdNetworkItems</key>
     <array>
       <dict>

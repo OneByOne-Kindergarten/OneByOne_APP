@@ -50,6 +50,9 @@ class WebViewController extends GetxController {
   /// 전면 광고 타이머
   Timer? _interstitialAdTimer;
 
+  /// 초기 딥링크 URI 저장
+  Uri? _pendingInitialUri;
+
   @override
   void onInit() {
     /// 웹뷰 디버깅 로그 관리
@@ -185,7 +188,7 @@ class WebViewController extends GetxController {
         if(uri == null) {
           return;
         }else{
-          /// TODO : 딥링크 이동 처리
+          _handleDeepLink(uri);
           return;
         }
       }, onError: (Object err) {
@@ -194,12 +197,21 @@ class WebViewController extends GetxController {
     }
   }
 
-  /// 앱 시작 초기 딥링크 처리 - 이후 페이지 이동
+  /// 앱 시작 초기 딥링크 처리 - 메인 로드 후 딥링크 이동
   Future<void> handleInitialUri() async {
     final uri = await appLinks.getInitialLink();
     if (uri != null) {
-      /// TODO : 딥링크 이동 처리
+      _pendingInitialUri = uri;
       return;
+    }
+  }
+
+  /// 초기 딥링크 처리 (메인 로드 완료 후)
+  void _processPendingInitialDeepLink() {
+    if (_pendingInitialUri != null) {
+      CommonUtil.logger.d("메인 로드 완료 후 초기 딥링크 처리: $_pendingInitialUri");
+      _handleDeepLink(_pendingInitialUri!);
+      _pendingInitialUri = null;
     }
   }
 
@@ -207,6 +219,7 @@ class WebViewController extends GetxController {
   void setInitialLoadComplete() async {
     await Future.delayed(const Duration(milliseconds: 1500));
     isInitialLoadComplete.value = true;
+    _processPendingInitialDeepLink();
   }
 
   /// 하단 배너 숨기기
@@ -218,6 +231,55 @@ class WebViewController extends GetxController {
   void displayBottomBanner() {
     if (isAdLoaded.value) {
       showBottomBanner.value = true;
+    }
+  }
+
+  /// 딥링크 처리 통합 메서드 - 카카오톡 공유하기
+  void _handleDeepLink(Uri uri) {
+    CommonUtil.logger.d("딥링크 분석 - path: '${uri.path}', host: '${uri.host}', scheme: '${uri.scheme}'");
+    switch(uri.host) {
+      /// 커뮤니티
+      case 'community':
+        String communityId = uri.queryParameters['communityId'] ?? '';
+        if (communityId.isNotEmpty && communityId != '') {
+          String newUrl = "${PageUrl.baseUrl}/community/$communityId";
+          CommonUtil.logger.d("딥링크 페이지 이동 시도 > 커뮤니티 > $newUrl");
+          changeMyUrl(Uri.parse(newUrl));
+          webViewController.loadUrl(
+            urlRequest: URLRequest(url: WebUri(newUrl)),
+          );
+        }
+        break;
+
+      /// 유치원
+      case 'kindergarten':
+        String kindergartenId = uri.queryParameters['kindergartenId'] ?? '';
+        if (kindergartenId.isNotEmpty && kindergartenId != '') {
+          String newUrl = "${PageUrl.baseUrl}/kindergarten/$kindergartenId";
+          CommonUtil.logger.d("딥링크 페이지 이동 시도 > 유치원 > $newUrl");
+          changeMyUrl(Uri.parse(newUrl));
+          webViewController.loadUrl(
+            urlRequest: URLRequest(url: WebUri(newUrl)),
+          );
+        }
+
+      /// 리뷰
+      case 'review':
+        String kindergartenId = uri.queryParameters['kindergartenId'] ?? '';
+        bool isWork = uri.queryParameters['isWork'] == 'true';
+        if(kindergartenId.isNotEmpty && kindergartenId != '') {
+          String newUrl = "${PageUrl.baseUrl}/kindergarten/$kindergartenId/review?type=${isWork ? 'work' : 'learning'}";
+          CommonUtil.logger.d("딥링크 페이지 이동 시도 > 리뷰 > $newUrl");
+          changeMyUrl(Uri.parse(newUrl));
+          webViewController.loadUrl(
+            urlRequest: URLRequest(url: WebUri(newUrl)),
+          );
+        }
+
+      /// 처리 불가
+      default:
+        CommonUtil.logger.d("처리되지 않은 딥링크 - host: '${uri.host}', full: ${uri.toString()}");
+        break;
     }
   }
 }
