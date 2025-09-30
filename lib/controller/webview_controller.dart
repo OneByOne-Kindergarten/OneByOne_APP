@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_by_one/common/ad_helper.dart';
 import 'package:one_by_one/common/common_util.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../common/app_page_url.dart';
 
@@ -234,52 +235,75 @@ class WebViewController extends GetxController {
     }
   }
 
-  /// 딥링크 처리 통합 메서드 - 카카오톡 공유하기
+  /// 딥링크 처리 통합 메서드
   void _handleDeepLink(Uri uri) {
     CommonUtil.logger.d("딥링크 분석 - path: '${uri.path}', host: '${uri.host}', scheme: '${uri.scheme}'");
-    switch(uri.host) {
+    
+    /// 카카오 공유하기 스키마 처리
+    Uri normalizedUri = _normalizeDeepLink(uri);
+
+    /// 딥링크 처리
+    switch(normalizedUri.host) {
+
       /// 커뮤니티
       case 'community':
-        String communityId = uri.queryParameters['communityId'] ?? '';
+        String communityId = normalizedUri.queryParameters['communityId'] ?? '';
         if (communityId.isNotEmpty && communityId != '') {
-          String newUrl = "${PageUrl.baseUrl}/community/$communityId";
-          CommonUtil.logger.d("딥링크 페이지 이동 시도 > 커뮤니티 > $newUrl");
-          changeMyUrl(Uri.parse(newUrl));
-          webViewController.loadUrl(
-            urlRequest: URLRequest(url: WebUri(newUrl)),
-          );
+          _navigateToPage("${PageUrl.baseUrl}/community/$communityId", "커뮤니티");
         }
         break;
 
       /// 유치원
       case 'kindergarten':
-        String kindergartenId = uri.queryParameters['kindergartenId'] ?? '';
+        String kindergartenId = normalizedUri.queryParameters['kindergartenId'] ?? '';
         if (kindergartenId.isNotEmpty && kindergartenId != '') {
-          String newUrl = "${PageUrl.baseUrl}/kindergarten/$kindergartenId";
-          CommonUtil.logger.d("딥링크 페이지 이동 시도 > 유치원 > $newUrl");
-          changeMyUrl(Uri.parse(newUrl));
-          webViewController.loadUrl(
-            urlRequest: URLRequest(url: WebUri(newUrl)),
-          );
+          _navigateToPage("${PageUrl.baseUrl}/kindergarten/$kindergartenId", "유치원");
         }
+        break;
 
       /// 리뷰
       case 'review':
-        String kindergartenId = uri.queryParameters['kindergartenId'] ?? '';
-        bool isWork = uri.queryParameters['isWork'] == 'true';
+        String kindergartenId = normalizedUri.queryParameters['kindergartenId'] ?? '';
+        bool isWork = normalizedUri.queryParameters['isWork'] == 'true';
         if(kindergartenId.isNotEmpty && kindergartenId != '') {
           String newUrl = "${PageUrl.baseUrl}/kindergarten/$kindergartenId/review?type=${isWork ? 'work' : 'learning'}";
-          CommonUtil.logger.d("딥링크 페이지 이동 시도 > 리뷰 > $newUrl");
-          changeMyUrl(Uri.parse(newUrl));
-          webViewController.loadUrl(
-            urlRequest: URLRequest(url: WebUri(newUrl)),
-          );
+          _navigateToPage(newUrl, "리뷰");
         }
+        break;
 
       /// 처리 불가
       default:
-        CommonUtil.logger.d("처리되지 않은 딥링크 - host: '${uri.host}', full: ${uri.toString()}");
+        CommonUtil.logger.d("처리되지 않은 딥링크 - host: '${normalizedUri.host}', full: ${normalizedUri.toString()}");
         break;
     }
+  }
+
+  /// 카카오 공유하기 스키마 처리
+  Uri _normalizeDeepLink(Uri uri) {
+    if (uri.scheme == 'onebyone') {
+      return uri;
+    }
+    if (uri.scheme == 'kakao${dotenv.env['NATIVE_APP_KEY']}') {
+      String? communityId = uri.queryParameters['communityId'];
+      String? kindergartenId = uri.queryParameters['kindergartenId'];
+      String? isWork = uri.queryParameters['isWork'];
+      if (communityId != null) {
+        return Uri.parse('onebyone://community?communityId=$communityId');
+      } else if (kindergartenId != null && isWork != null) {
+        return Uri.parse('onebyone://review?kindergartenId=$kindergartenId&isWork=$isWork');
+      } else if (kindergartenId != null) {
+        return Uri.parse('onebyone://kindergarten?kindergartenId=$kindergartenId');
+      }
+    }
+    return uri;
+  }
+
+  /// 페이지 네비게이션 헬퍼 메서드
+  void _navigateToPage(String url, String pageType) {
+    CommonUtil.logger.d("딥링크 페이지 이동 시도 > $pageType > $url");
+    changeMyUrl(Uri.parse(url));
+    webViewController.loadUrl(
+      urlRequest: URLRequest(url: WebUri(url)),
+    );
   }
 }

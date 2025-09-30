@@ -93,6 +93,8 @@ class KakaoShareManager {
               link: Link(
                 // 딥링크로 앱 실행
                 mobileWebUrl: Uri.parse('onebyone://community?communityId=${shareModel.id}'),
+                androidExecutionParams: {'communityId': shareModel.id},
+                iosExecutionParams: {'communityId': shareModel.id},
               ),
             ),
             buttons: [
@@ -101,6 +103,8 @@ class KakaoShareManager {
                 link: Link(
                   // 딥링크로 앱 직접 실행
                   mobileWebUrl: Uri.parse('onebyone://community?communityId=${shareModel.id}'),
+                  androidExecutionParams: {'communityId': shareModel.id},
+                  iosExecutionParams: {'communityId': shareModel.id},
                 ),
               ),
             ]);
@@ -117,6 +121,8 @@ class KakaoShareManager {
               link: Link(
                 // 딥링크로 앱 실행
                 mobileWebUrl: Uri.parse('onebyone://kindergarten?kindergartenId=${shareModel.id}'),
+                androidExecutionParams: {'kindergartenId': shareModel.id},
+                iosExecutionParams: {'kindergartenId': shareModel.id},
               ),
             ),
             buttons: [
@@ -125,6 +131,8 @@ class KakaoShareManager {
                 link: Link(
                   // 딥링크로 앱 직접 실행
                   mobileWebUrl: Uri.parse('onebyone://kindergarten?kindergartenId=${shareModel.id}'),
+                  androidExecutionParams: {'kindergartenId': shareModel.id},
+                  iosExecutionParams: {'kindergartenId': shareModel.id},
                 ),
               ),
             ]);
@@ -141,6 +149,8 @@ class KakaoShareManager {
               link: Link(
                 // 딥링크로 앱 실행 (kindergartenId + isWork 필요)
                 mobileWebUrl: Uri.parse('onebyone://review?kindergartenId=${shareModel.id}&isWork=${shareModel.isWork}'),
+                androidExecutionParams: {'kindergartenId': shareModel.id, 'isWork': shareModel.isWork.toString()},
+                iosExecutionParams: {'kindergartenId': shareModel.id, 'isWork': shareModel.isWork.toString()},
               ),
             ),
             buttons: [
@@ -149,6 +159,8 @@ class KakaoShareManager {
                 link: Link(
                   // 딥링크로 앱 직접 실행 (kindergartenId + isWork 필요)
                   mobileWebUrl: Uri.parse('onebyone://review?kindergartenId=${shareModel.id}&isWork=${shareModel.isWork}'),
+                  androidExecutionParams: {'kindergartenId': shareModel.id, 'isWork': shareModel.isWork.toString()},
+                  iosExecutionParams: {'kindergartenId': shareModel.id, 'isWork': shareModel.isWork.toString()},
                 ),
               ),
             ]);
