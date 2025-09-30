@@ -44,15 +44,36 @@ class WebViewHandlers {
                 return await _handlePermissionRequest(messageData);
 
               case 'REQUEST_LAT_LONG':
-                var locationStatus = await Permission.location.status;
-                if (locationStatus.isDenied || locationStatus.isPermanentlyDenied) {
-                  locationStatus = await Permission.location.request();
-                }
-                if (locationStatus == PermissionStatus.granted) {
-                  Position position = await Geolocator.getCurrentPosition(locationSettings: LocationSettings(accuracy: LocationAccuracy.high));
-                  return {'status': 'true' , 'lat' : position.latitude.toString() , 'long' : position.longitude.toString()};
-                } else {
-                  return {'status': 'false', 'lat' : '0', 'long': '0'};
+                try {
+                  var locationStatus = await Permission.location.status;
+                  if (locationStatus.isDenied || locationStatus.isPermanentlyDenied) {
+                    locationStatus = await Permission.location.request();
+                  }
+                  if (locationStatus == PermissionStatus.granted) {
+                    Position position = await Geolocator.getCurrentPosition(locationSettings: LocationSettings(accuracy: LocationAccuracy.high));
+                    return {'status': 'true', 'lat': position.latitude.toString(), 'long': position.longitude.toString()};
+                  } else if (locationStatus == PermissionStatus.permanentlyDenied) {
+                    return {
+                      'status': 'false',
+                      'lat': '0',
+                      'long': '0',
+                      'error': '위치 권한이 영구적으로 거부되었습니다. 설정에서 권한을 허용해주세요.'
+                    };
+                  } else {
+                    return {
+                      'status': 'false',
+                      'lat': '0',
+                      'long': '0',
+                      'error': '위치 권한이 거부되었습니다.'
+                    };
+                  }
+                } catch (e) {
+                  return {
+                    'status': 'false',
+                    'lat': '0',
+                    'long': '0',
+                    'error': '위치 정보를 가져오는 중 오류가 발생했습니다.'
+                  };
                 }
 
               case 'KAKAO_SHARE':
