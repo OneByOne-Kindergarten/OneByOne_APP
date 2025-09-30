@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:one_by_one/common/app_page_url.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:one_by_one/common/common_util.dart';
 import 'package:one_by_one/common/pref/app_pref.dart';
+import 'package:one_by_one/service/kakao_share_service.dart';
 
 /// 웹뷰 자바스크립트 핸들러를 관리하는 클래스
 class WebViewHandlers {
@@ -53,6 +55,10 @@ class WebViewHandlers {
                   return {'status': 'false', 'lat' : '0', 'long': '0'};
                 }
 
+              case 'KAKAO_SHARE':
+                print('카카오 공유 요청 >> $messageData');
+                return await _handleKakaoShareRequest(messageData);
+
               default:
                 return {'status': 'success', 'received': true};
             }
@@ -64,6 +70,55 @@ class WebViewHandlers {
         return {'status': 'error', 'message': 'Invalid message'};
       },
     );
+  }
+
+  /// 카카오 공유 요청 처리
+  static Future<Map<String, dynamic>> _handleKakaoShareRequest(dynamic messageData) async {
+    try {
+      final String title = messageData['title'] ?? '';
+      final String id = messageData['id'] ?? '';
+      final bool isWork = messageData['isWork'] ?? false;
+      final String shareTypeString = messageData['shareType'] ?? 'community';
+      print('카카오 공유 데이터: title=$title, id=$id, shareType=$shareTypeString, isWork=$isWork');
+
+      ShareType shareType;
+      String url;
+      switch (shareTypeString.toLowerCase()) {
+        case 'community':
+          shareType = ShareType.community;
+          url = '${PageUrl.baseUrl}/community/$id';
+          break;
+        case 'kindergarten':
+          url = "${PageUrl.baseUrl}/kindergarten/$id";
+          shareType = ShareType.kindergarten;
+          break;
+        case 'review':
+          url = "${PageUrl.baseUrl}/kindergarten/$id/review?type=${isWork ? 'work' : 'learning'}";
+          shareType = ShareType.review;
+          break;
+        default:
+          url = '${PageUrl.baseUrl}/community/$id';
+          shareType = ShareType.community;
+          break;
+      }
+
+      // ShareModel 생성
+      final shareModel = ShareModel(
+        shareType: shareType,
+        title: title,
+        url: url,
+        id: id,
+        isWork: isWork,
+      );
+
+      // 카카오 공유
+      KakaoShareManager().shareMyCode(shareModel);
+      print('카카오 공유 성공');
+      return {'status': 'success', 'message': '카카오 공유 성공'};
+    } catch (e) {
+      print('카카오 공유 오류: $e');
+      return {'status': 'error', 'message': e.toString()};
+    }
   }
 
   /// FCM 토큰 요청 처리

@@ -58,6 +58,9 @@ dependencies:
   path_provider: ^2.1.1
   url_launcher: ^6.2.1
 
+  # 카카오 공유하기
+  kakao_flutter_sdk_share: ^1.9.7+3
+
   # 애드몹 광고
   google_mobile_ads: ^6.0.0
   # iOS 14+ ATT 권한

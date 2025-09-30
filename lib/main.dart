@@ -8,6 +8,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:one_by_one/app.dart';
 import 'package:one_by_one/common/app_notification.dart';
 import 'package:one_by_one/common/pref/app_preferences.dart';
@@ -34,6 +35,9 @@ void main() async {
 
   /// .env 파일 로딩
   await dotenv.load(fileName: "lib/.env");
+
+  /// 카카오 SDK 초기화
+  KakaoSdk.init(nativeAppKey: dotenv.env['NATIVE_APP_KEY']);
 
   /// iOS 14+ ATT 권한 요청 (광고 초기화 전)
   await AdHelper.requestTrackingAuthorization();
