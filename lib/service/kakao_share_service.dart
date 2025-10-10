@@ -87,9 +87,10 @@ class KakaoShareManager {
         template = FeedTemplate(
             content: Content(
               title: title,
-              description: "원바원의 커뮤니티 글을 확인해보세요!",
-              imageUrl: Uri.parse(
-                  "https://k.kakaocdn.net/14/dn/btsDCNVOr8S/s1lQ3XekZo5TLImV09v1Vk/o.jpg"),
+              description: "원바원에서 해당 커뮤니티 글을 확인해보세요!",
+              imageUrl: Uri.parse("https://github.com/user-attachments/assets/a68364bb-e3f4-461c-aa8b-ecdc7cbe6384"),
+              imageHeight: 600,
+              imageWidth: 1000,
               link: Link(
                 // 딥링크로 앱 실행
                 mobileWebUrl: Uri.parse('onebyone://community?communityId=${shareModel.id}'),
@@ -115,9 +116,10 @@ class KakaoShareManager {
         template = FeedTemplate(
             content: Content(
               title: title,
-              description: "원바원에서 유치원 정보를 확인해보세요!",
-              imageUrl: Uri.parse(
-                  "https://k.kakaocdn.net/14/dn/btsDCNVOr8S/s1lQ3XekZo5TLImV09v1Vk/o.jpg"),
+              description: "원바원에서 해당 유치원 정보를 확인해보세요!",
+              imageUrl: Uri.parse("https://github.com/user-attachments/assets/3f707b5a-430e-410e-8703-ae370060315f"),
+              imageHeight: 600,
+              imageWidth: 1000,
               link: Link(
                 // 딥링크로 앱 실행
                 mobileWebUrl: Uri.parse('onebyone://kindergarten?kindergartenId=${shareModel.id}'),
@@ -143,9 +145,16 @@ class KakaoShareManager {
         template = FeedTemplate(
             content: Content(
               title: title,
-              description: "원바원에서 유치원 리뷰를 확인해보세요!",
-              imageUrl: Uri.parse(
-                  "https://k.kakaocdn.net/14/dn/btsDCNVOr8S/s1lQ3XekZo5TLImV09v1Vk/o.jpg"),
+              description: "원바원에서 해당 유치원 리뷰를 확인해보세요!",
+              imageUrl: shareModel.isWork
+                  // 근무리뷰
+                  ? Uri.parse(
+                      "https://github.com/user-attachments/assets/2d99e19c-7e1a-4d8b-9748-182889d6d04c")
+                  // 실습 리뷰
+                  : Uri.parse(
+                      "https://github.com/user-attachments/assets/c1940651-2018-40d9-9ded-f4e40f6851bc"),
+              imageHeight: 600,
+              imageWidth: 1000,
               link: Link(
                 // 딥링크로 앱 실행 (kindergartenId + isWork 필요)
                 mobileWebUrl: Uri.parse('onebyone://review?kindergartenId=${shareModel.id}&isWork=${shareModel.isWork}'),
