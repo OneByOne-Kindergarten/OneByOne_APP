@@ -87,7 +87,7 @@ class KakaoShareManager {
         template = FeedTemplate(
             content: Content(
               title: title,
-              description: "원바원에서 해당 커뮤니티 글을 확인해보세요!",
+              description: "원바원에서 커뮤니티 글을 확인해보세요!",
               imageUrl: Uri.parse("https://github.com/user-attachments/assets/a68364bb-e3f4-461c-aa8b-ecdc7cbe6384"),
               imageHeight: 600,
               imageWidth: 1000,
@@ -116,7 +116,7 @@ class KakaoShareManager {
         template = FeedTemplate(
             content: Content(
               title: title,
-              description: "원바원에서 해당 유치원 정보를 확인해보세요!",
+              description: "원바원에서 유치원 정보를 확인해보세요!",
               imageUrl: Uri.parse("https://github.com/user-attachments/assets/3f707b5a-430e-410e-8703-ae370060315f"),
               imageHeight: 600,
               imageWidth: 1000,
@@ -145,7 +145,7 @@ class KakaoShareManager {
         template = FeedTemplate(
             content: Content(
               title: title,
-              description: "원바원에서 해당 유치원 리뷰를 확인해보세요!",
+              description: "원바원에서 유치원 리뷰를 확인해보세요!",
               imageUrl: shareModel.isWork
                   // 근무리뷰
                   ? Uri.parse(
