@@ -1,14 +1,11 @@
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
-import 'package:one_by_one/common/common_util.dart';
-import 'package:one_by_one/common/pref/app_pref.dart';
+import 'package:one_by_one/common/image_util.dart';
 import 'package:one_by_one/controller/webview_controller.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:one_by_one/common/webview/webview_settings.dart';
 import 'package:one_by_one/common/webview/webview_handlers.dart';
@@ -36,6 +33,125 @@ class WebViewWidget extends StatelessWidget {
 
       /// 유저 스크립트 설정 - 스크립트 주입 여부 확인 필요
       initialUserScripts: UnmodifiableListView<UserScript>([]),
+
+      /// 이미지 롱프레스 핸들러 (안드로이드 전용)
+      onLongPressHitTestResult: (controller, hitTestResult) async {
+        // 안드로이드에서만 작동
+        if (!Platform.isAndroid) return;
+        
+        if (hitTestResult.type == InAppWebViewHitTestResultType.SRC_IMAGE_ANCHOR_TYPE ||
+            hitTestResult.type == InAppWebViewHitTestResultType.IMAGE_TYPE) {
+          
+          final imageUrl = hitTestResult.extra;
+          if (imageUrl == null || imageUrl.isEmpty) return;
+          
+          // 이미지 프리뷰와 액션 메뉴를 함께 표시
+          showDialog(
+            context: context,
+            barrierColor: Colors.black87,
+            builder: (BuildContext dialogContext) {
+              return GestureDetector(
+                onTap: () => Navigator.pop(dialogContext),
+                child: Material(
+                  color: Colors.transparent,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // 이미지 프리뷰
+                      Flexible(
+                        flex: 3,
+                        child: GestureDetector(
+                          onTap: () {}, // 이미지 탭 시 닫히지 않도록
+                          child: Container(
+                            margin: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 20,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                imageUrl,
+                                fit: BoxFit.contain,
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes!
+                                          : null,
+                                    ),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(
+                                    child: Icon(Icons.error, color: Colors.white, size: 50),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // 액션 버튼들
+                      GestureDetector(
+                        onTap: () {}, // 버튼 영역 탭 시 닫히지 않도록
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.95),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ListTile(
+                                leading: const Icon(Icons.share, color: Colors.blue),
+                                title: const Text(
+                                  '공유하기',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                onTap: () async {
+                                  Navigator.pop(dialogContext);
+                                  await ImageUtil.shareImage(imageUrl, context);
+                                },
+                              ),
+                              const Divider(height: 1),
+                              ListTile(
+                                leading: const Icon(Icons.add_photo_alternate, color: Colors.blue),
+                                title: const Text(
+                                  '사진 앨범에 추가',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                onTap: () async {
+                                  Navigator.pop(dialogContext);
+                                  await ImageUtil.saveImageToGallery(imageUrl, context);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 100),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        }
+      },
 
       /// HTTP 에러 핸들링
       onReceivedHttpError: (controller, request, errorResponse) {
