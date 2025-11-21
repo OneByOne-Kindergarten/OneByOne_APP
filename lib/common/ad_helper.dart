@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -20,6 +21,8 @@ class AdHelper {
   static const String testBannerAdUnitIdIOS = 'ca-app-pub-3940256099942544/2934735716';
   static const String testInterstitialAdUnitIdAndroid = 'ca-app-pub-3940256099942544/1033173712';
   static const String testInterstitialAdUnitIdIOS = 'ca-app-pub-3940256099942544/4411468910';
+  static const String testRewardAdUnitIdAndroid = 'ca-app-pub-3940256099942544/5224354917';
+  static const String testRewardAdUnitIdIOS = 'ca-app-pub-3940256099942544/1712485313';
   
   /// 접이식 배너 테스트 광고 ID
   static const String testCollapsibleBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/2014213617';
@@ -71,6 +74,21 @@ class AdHelper {
       return dotenv.env['ADMOB_INTERSTITIAL_ID_ANDROID'] ?? testInterstitialAdUnitIdAndroid;
     } else if (Platform.isIOS) {
       return dotenv.env['ADMOB_INTERSTITIAL_ID_IOS'] ?? testInterstitialAdUnitIdIOS;
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+  }
+
+  /// 리워드 광고 ID
+  static String get rewardAdUnitId {
+    if (isDev) {
+      return Platform.isAndroid ? testRewardAdUnitIdAndroid : testRewardAdUnitIdIOS;
+    }
+    
+    if (Platform.isAndroid) {
+      return dotenv.env['ADMOB_REWARD_ID_ANDROID'] ?? testRewardAdUnitIdAndroid;
+    } else if (Platform.isIOS) {
+      return dotenv.env['ADMOB_REWARD_ID_IOS'] ?? testRewardAdUnitIdIOS;
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -218,5 +236,91 @@ class AdHelper {
     );
 
     return interstitialAd;
+  }
+
+  /// 리워드 광고 로드 및 표시
+  static Future<Map<String, dynamic>> loadAndShowRewardAd() async {
+    if (!isAdEnabled) {
+      return {
+        'status': 'error',
+        'message': '광고가 비활성화되어 있습니다.'
+      };
+    }
+
+    try {
+      CommonUtil.logger.d('리워드 광고 로드 시작');
+      
+      final completer = Completer<Map<String, dynamic>>();
+      
+      await RewardedAd.load(
+        adUnitId: rewardAdUnitId,
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (ad) {
+            CommonUtil.logger.d('리워드 광고 로드 성공 >> ${ad.adUnitId}');
+            
+            // 광고 이벤트 콜백 설정
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+              onAdShowedFullScreenContent: (ad) {
+                CommonUtil.logger.d('리워드 광고 화면에 표시됨');
+              },
+              onAdDismissedFullScreenContent: (ad) {
+                CommonUtil.logger.d('리워드 광고 닫힘');
+                ad.dispose();
+                // 광고가 닫혔지만 보상을 받지 못한 경우
+                if (!completer.isCompleted) {
+                  completer.complete({
+                    'status': 'cancelled',
+                    'message': '광고가 완료되지 않았습니다.'
+                  });
+                }
+              },
+              onAdFailedToShowFullScreenContent: (ad, error) {
+                CommonUtil.logger.e('리워드 광고 표시 실패 >> $error');
+                ad.dispose();
+                if (!completer.isCompleted) {
+                  completer.complete({
+                    'status': 'error',
+                    'message': '광고 표시 실패: ${error.message}'
+                  });
+                }
+              },
+            );
+            
+            // 광고 표시
+            ad.show(
+              onUserEarnedReward: (ad, reward) {
+                CommonUtil.logger.d('리워드 획득 >> 금액: ${reward.amount}, 타입: ${reward.type}');
+                if (!completer.isCompleted) {
+                  completer.complete({
+                    'status': 'success',
+                    'message': '광고 시청 완료',
+                    'reward': {
+                      'amount': reward.amount,
+                      'type': reward.type,
+                    }
+                  });
+                }
+              },
+            );
+          },
+          onAdFailedToLoad: (error) {
+            CommonUtil.logger.e('리워드 광고 로드 실패 >> $error');
+            completer.complete({
+              'status': 'error',
+              'message': '광고 로드 실패: ${error.message}'
+            });
+          },
+        ),
+      );
+      
+      return await completer.future;
+    } catch (e) {
+      CommonUtil.logger.e('리워드 광고 오류 >> $e');
+      return {
+        'status': 'error',
+        'message': '광고 처리 중 오류 발생: $e'
+      };
+    }
   }
 }

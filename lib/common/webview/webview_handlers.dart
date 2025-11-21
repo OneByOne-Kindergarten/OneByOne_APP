@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:one_by_one/common/common_util.dart';
 import 'package:one_by_one/common/pref/app_pref.dart';
 import 'package:one_by_one/service/kakao_share_service.dart';
+import 'package:one_by_one/common/ad_helper.dart';
 
 /// 웹뷰 자바스크립트 핸들러를 관리하는 클래스
 class WebViewHandlers {
@@ -79,6 +80,10 @@ class WebViewHandlers {
               case 'KAKAO_SHARE':
                 print('카카오 공유 요청 >> $messageData');
                 return await _handleKakaoShareRequest(messageData);
+
+              case 'REQUEST_REWARD_AD':
+                print('리워드 광고 요청 >> $messageData');
+                return await _handleRewardAdRequest();
 
               default:
                 return {'status': 'success', 'received': true};
@@ -189,6 +194,20 @@ class WebViewHandlers {
 
       default:
         return {'status': 'error', 'message': '알 수 없는 권한 타입: $permissionType'};
+    }
+  }
+
+  /// 리워드 광고 요청 처리
+  static Future<Map<String, dynamic>> _handleRewardAdRequest() async {
+    try {
+      final result = await AdHelper.loadAndShowRewardAd();
+      return result;
+    } catch (e) {
+      CommonUtil.logger.e('리워드 광고 요청 오류: $e');
+      return {
+        'status': 'error',
+        'message': '리워드 광고 요청 처리 중 오류 발생: $e'
+      };
     }
   }
 }
