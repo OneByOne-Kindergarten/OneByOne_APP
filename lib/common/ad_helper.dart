@@ -242,7 +242,8 @@ class AdHelper {
   static Future<Map<String, dynamic>> loadAndShowRewardAd() async {
     if (!isAdEnabled) {
       return {
-        'status': 'error',
+        'status': 'success',
+        'rewarded': false,
         'message': '광고가 비활성화되어 있습니다.'
       };
     }
@@ -267,21 +268,24 @@ class AdHelper {
               onAdDismissedFullScreenContent: (ad) {
                 CommonUtil.logger.d('리워드 광고 닫힘');
                 ad.dispose();
-                // 광고가 닫혔지만 보상을 받지 못한 경우
+                // 광고가 닫혔지만 보상을 받지 못한 경우 (사용자가 중간에 닫음)
                 if (!completer.isCompleted) {
                   completer.complete({
                     'status': 'cancelled',
-                    'message': '광고가 완료되지 않았습니다.'
+                    'rewarded': false,
+                    'message': '사용자가 광고를 닫았습니다.'
                   });
                 }
               },
               onAdFailedToShowFullScreenContent: (ad, error) {
                 CommonUtil.logger.e('리워드 광고 표시 실패 >> $error');
                 ad.dispose();
+                // 광고 표시 실패는 시스템 문제이므로 success로 처리 (보상 없음)
                 if (!completer.isCompleted) {
                   completer.complete({
-                    'status': 'error',
-                    'message': '광고 표시 실패: ${error.message}'
+                    'status': 'success',
+                    'rewarded': false,
+                    'message': '광고를 표시할 수 없습니다.'
                   });
                 }
               },
@@ -294,6 +298,7 @@ class AdHelper {
                 if (!completer.isCompleted) {
                   completer.complete({
                     'status': 'success',
+                    'rewarded': true,
                     'message': '광고 시청 완료',
                     'reward': {
                       'amount': reward.amount,
@@ -306,9 +311,11 @@ class AdHelper {
           },
           onAdFailedToLoad: (error) {
             CommonUtil.logger.e('리워드 광고 로드 실패 >> $error');
+            // 광고 로드 실패 (광고 없음, 네트워크 문제 등)는 success로 처리 (보상 없음)
             completer.complete({
-              'status': 'error',
-              'message': '광고 로드 실패: ${error.message}'
+              'status': 'success',
+              'rewarded': false,
+              'message': '현재 이용 가능한 광고가 없습니다.'
             });
           },
         ),
@@ -317,9 +324,11 @@ class AdHelper {
       return await completer.future;
     } catch (e) {
       CommonUtil.logger.e('리워드 광고 오류 >> $e');
+      // 예외 발생 시에도 success로 처리 (보상 없음)
       return {
-        'status': 'error',
-        'message': '광고 처리 중 오류 발생: $e'
+        'status': 'success',
+        'rewarded': false,
+        'message': '광고를 불러올 수 없습니다.'
       };
     }
   }

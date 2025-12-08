@@ -204,9 +204,11 @@ class WebViewHandlers {
       return result;
     } catch (e) {
       CommonUtil.logger.e('리워드 광고 요청 오류: $e');
+      // 예외 발생 시에도 success로 처리 (보상 없음)
       return {
-        'status': 'error',
-        'message': '리워드 광고 요청 처리 중 오류 발생: $e'
+        'status': 'success',
+        'rewarded': false,
+        'message': '광고를 불러올 수 없습니다.'
       };
     }
   }
