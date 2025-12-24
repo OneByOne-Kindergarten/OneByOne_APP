@@ -278,7 +278,7 @@ class AdHelper {
                 }
               },
               onAdFailedToShowFullScreenContent: (ad, error) {
-                CommonUtil.logger.e('리워드 광고 표시 실패 >> $error');
+                CommonUtil.logger.e('리워드 광고 표시 실패 >> 코드: ${error.code}, 메시지: ${error.message}');
                 ad.dispose();
                 // 광고 표시 실패는 시스템 문제이므로 success로 처리 (보상 없음)
                 if (!completer.isCompleted) {
@@ -310,7 +310,7 @@ class AdHelper {
             );
           },
           onAdFailedToLoad: (error) {
-            CommonUtil.logger.e('리워드 광고 로드 실패 >> $error');
+            CommonUtil.logger.e('리워드 광고 로드 실패 >> 코드: ${error.code}, 메시지: ${error.message}, 도메인: ${error.domain}');
             // 광고 로드 실패 (광고 없음, 네트워크 문제 등)는 success로 처리 (보상 없음)
             completer.complete({
               'status': 'success',

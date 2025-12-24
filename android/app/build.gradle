@@ -48,8 +48,8 @@ android {
         minSdk = 30
         targetSdk = 35
         /// TODO : 안드로이드 버전코드 변경
-        versionCode = 7
-        versionName = "1.0.3"
+        versionCode = 8
+        versionName = "1.0.4"
 
         manifestPlaceholders += [
                 adMobApplicationId: adMobAppId ?: "ca-app-pub-3940256099942544~3347511713",
