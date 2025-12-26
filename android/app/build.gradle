@@ -48,7 +48,7 @@ android {
         minSdk = 30
         targetSdk = 35
         /// TODO : 안드로이드 버전코드 변경
-        versionCode = 8
+        versionCode = 9
         versionName = "1.0.4"
 
         manifestPlaceholders += [
